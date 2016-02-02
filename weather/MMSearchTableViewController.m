@@ -44,22 +44,23 @@
     
     self.navigationItem.titleView = self.searchController.searchBar;
     
-    [self.searchController.searchBar becomeFirstResponder];
-
-    
     self.definesPresentationContext = YES;
 }
 
 
+- (void)showKeyboard {
+     [self.searchController.searchBar becomeFirstResponder];
+}
+
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     
-    
-
+    [self performSelector:@selector(showKeyboard) withObject:nil afterDelay:0.1];
 }
+
 #pragma mark - UITableViewDelegate
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(nonnull NSIndexPath *)indexPath {
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     // add the selected city to the data store
     
     NSDictionary *cityData = self.cities[indexPath.row][@"cityData"];
@@ -105,21 +106,20 @@
     }
 }
 
-#pragma mark - UISearchControllerDelegate
-
-- (void)didPresentSearchController:(UISearchController *)searchController {
-    [searchController becomeFirstResponder];
-}
-
 #pragma mark - UISearchBarDelegate
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
     [self dismissViewController];
 }
 
+- (BOOL)searchBarShouldBeginEditing:(UISearchBar *)searchBar {
+    return YES;
+}
+
 #pragma mark - Private
 
 - (void)dismissViewController {
+    
     [self.searchController.searchBar resignFirstResponder];
     
     [self.parentViewController dismissViewControllerAnimated:YES completion:nil];
