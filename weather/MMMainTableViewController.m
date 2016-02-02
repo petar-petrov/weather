@@ -15,6 +15,8 @@
 #import "MMDetailedWeatherViewController.h"
 
 #import "Weather.h"
+#import "MMReachabilityHandler.h"
+
 
 #import <Reachability/Reachability.h>
 
@@ -208,23 +210,14 @@
 #pragma mark - Private
 
 - (void)refreshWeatherData {
-    Reachability *reach = [Reachability reachabilityWithHostname:@"www.google.com"];
+    MMReachabilityHandler *reachabilityHandler = [[MMReachabilityHandler alloc] init];
     
-    reach.reachableBlock = ^(Reachability *reach) {
-        if (reach.currentReachabilityStatus != NotReachable)
-            [self.manager updateAllCities];
-        
-    };
-    
-    reach.unreachableBlock = ^(Reachability *reach) {
-        NSLog(@"Unreachable");
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self showAlertView];
-        });
-    };
-    
-    [reach startNotifier];
+    [reachabilityHandler performReachabilityCheckWithReachableBlock:^{
+                                                        [self.manager updateAllCities];
+                                                    }
+                                                   unreachableBlock:^ {
+                                                        [self showAlertView];
+                                                   }];
 }
 
 - (void)showAlertView {

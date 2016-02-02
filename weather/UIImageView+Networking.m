@@ -25,12 +25,14 @@
                 completionHandler:^(NSData *data,
                                     NSURLResponse *response,
                                     NSError *error) {
-                    UIImage *image = [UIImage imageWithData:data];
-                    
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        if (image)
+                    if (!error) {
+                        UIImage *image = [UIImage imageWithData:data];
+                        
+                        dispatch_async(dispatch_get_main_queue(), ^{
                             self.image = image;
-                    });
+                        });
+                    }
+                    
                 }] resume];
     }
 }

@@ -45,8 +45,6 @@
     self.navigationItem.titleView = self.searchController.searchBar;
     
     [self.searchController.searchBar becomeFirstResponder];
-    
-    [self.searchController setActive:YES];
 
     
     self.definesPresentationContext = YES;
@@ -123,8 +121,6 @@
 
 - (void)dismissViewController {
     [self.searchController.searchBar resignFirstResponder];
-    
-    self.searchController.active = NO;
     
     [self.parentViewController dismissViewControllerAnimated:YES completion:nil];
 }
