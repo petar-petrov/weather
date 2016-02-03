@@ -75,21 +75,7 @@
     
     [self.tableView registerClass:[MMWeatherTableViewCell class] forCellReuseIdentifier:@"WeatherCell"];
     
-    UISegmentedControl *unitsSegmentedController = [[UISegmentedControl alloc] initWithItems:@[@"ºC", @"ºF"]];
-    unitsSegmentedController.frame = CGRectMake(0.0f, 0.0f, 100.0f, 22.0f);
-    [unitsSegmentedController addTarget:self action:@selector(changeUnits:) forControlEvents:UIControlEventValueChanged];
-    
-    NSString *unitString = [[NSUserDefaults standardUserDefaults] stringForKey:@"MMWeatherUnit"];
-    unitsSegmentedController.selectedSegmentIndex = [unitString isEqualToString:@"metric"] ? 0 : 1;
-    
-    UIBarButtonItem *unitsBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:unitsSegmentedController];
-    
-    UIBarButtonItem *addBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"plus.png"] style:UIBarButtonItemStylePlain target:self action:@selector(showSearch:)];
-    
-    UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
-    
-    [self setToolbarItems:@[unitsBarButtonItem,flexibleSpace, addBarButtonItem]];
-    
+    [self setupToolbar];
     
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
@@ -153,6 +139,7 @@
         destinationViewController.city = [self.fetchedResultController objectAtIndexPath:self.currentlySelectedIndexPath];
     }
 }
+
 #pragma mark - UITableViewDelegate
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -224,6 +211,24 @@
 
 
 #pragma mark - Private
+
+- (void)setupToolbar {
+    UISegmentedControl *unitsSegmentedController = [[UISegmentedControl alloc] initWithItems:@[@"ºC", @"ºF"]];
+    [unitsSegmentedController setWidth:44.0f forSegmentAtIndex:0];
+    [unitsSegmentedController setWidth:44.0f forSegmentAtIndex:1];
+    [unitsSegmentedController addTarget:self action:@selector(changeUnits:) forControlEvents:UIControlEventValueChanged];
+    
+    NSString *unitString = [[NSUserDefaults standardUserDefaults] stringForKey:@"MMWeatherUnit"];
+    unitsSegmentedController.selectedSegmentIndex = [unitString isEqualToString:@"metric"] ? 0 : 1;
+    
+    UIBarButtonItem *unitsBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:unitsSegmentedController];
+    
+    UIBarButtonItem *addBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"plus.png"] style:UIBarButtonItemStylePlain target:self action:@selector(showSearch:)];
+    
+    UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+    
+    [self setToolbarItems:@[unitsBarButtonItem,flexibleSpace, addBarButtonItem]];
+}
 
 - (void)showSearch:(id)sender {
     [self performSegueWithIdentifier:@"Show Search View" sender:sender];
