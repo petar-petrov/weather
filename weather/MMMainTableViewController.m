@@ -13,6 +13,7 @@
 #import "MMWeatherTableViewCell.h"
 #import "UIImageView+Networking.h"
 #import "MMDetailedWeatherViewController.h"
+#import "MMMapViewController.h"
 
 #import "Weather.h"
 #import "MMReachabilityHandler.h"
@@ -137,6 +138,10 @@
         MMDetailedWeatherViewController *destinationViewController = (MMDetailedWeatherViewController *)segue.destinationViewController;
         
         destinationViewController.city = [self.fetchedResultController objectAtIndexPath:self.currentlySelectedIndexPath];
+    } else if ([segue.identifier isEqualToString:@"ShowMap"]) {
+        MMMapViewController *destinationViewController = (MMMapViewController *)segue.destinationViewController;
+        
+        destinationViewController.cities = self.fetchedResultController.fetchedObjects;
     }
 }
 

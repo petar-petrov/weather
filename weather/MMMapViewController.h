@@ -10,4 +10,6 @@
 
 @interface MMMapViewController : UIViewController
 
+@property (strong, nonatomic) NSArray *cities;
+
 @end

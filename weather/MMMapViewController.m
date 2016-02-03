@@ -7,10 +7,11 @@
 //
 
 #import "MMMapViewController.h"
+#import "MMWeatherPin.h"
 
 @import MapKit;
 
-@interface MMMapViewController ()
+@interface MMMapViewController () <MKMapViewDelegate>
 
 @property (weak, nonatomic) IBOutlet MKMapView *mapView;
 
@@ -21,21 +22,52 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    
+    self.mapView.delegate = self;
+//    self.mapView.showsCompass = YES;
+    
+    @autoreleasepool {
+        for (City *city in self.cities) {
+            MMWeatherPin *weatherPin = [[MMWeatherPin alloc] initWithCity:city];
+            
+            [self.mapView addAnnotation:weatherPin];
+        }
+    }
+    
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+#pragma mark - MKMapViewDelegate
+
+- (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation {
+    
+    if ([annotation isKindOfClass:[MMWeatherPin class]]) {
+        MMWeatherPin *weatherPin = (MMWeatherPin *)annotation;
+        
+        MKAnnotationView *annotationView = [mapView dequeueReusableAnnotationViewWithIdentifier:@"WeatherAnnotation"];
+        
+        if (annotationView == nil) {
+            annotationView = [self annotationViewWithAnnotation:weatherPin];
+        } else {
+            annotationView.annotation = weatherPin;
+        }
+        
+        return annotationView;
+    }
+    
+    return nil;
 }
 
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
+- (MKAnnotationView *)annotationViewWithAnnotation:(id <MKAnnotation>)annotation {
+    
+    MMWeatherPin *weatherPin = (MMWeatherPin *)annotation;
+    
+    MKAnnotationView *annotationView = [[MKAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"WeatherAnnotation"];
+    
+    annotationView.enabled = YES;
+    annotationView.canShowCallout = YES;
+    annotationView.image = [UIImage imageNamed:weatherPin.imageName];
+    
+    return annotationView;
 }
-*/
 
 @end
