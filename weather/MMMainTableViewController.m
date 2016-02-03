@@ -75,6 +75,22 @@
     
     [self.tableView registerClass:[MMWeatherTableViewCell class] forCellReuseIdentifier:@"WeatherCell"];
     
+    UISegmentedControl *unitsSegmentedController = [[UISegmentedControl alloc] initWithItems:@[@"ºC", @"ºF"]];
+    unitsSegmentedController.frame = CGRectMake(0.0f, 0.0f, 100.0f, 22.0f);
+    [unitsSegmentedController addTarget:self action:@selector(changeUnits:) forControlEvents:UIControlEventValueChanged];
+    
+    NSString *unitString = [[NSUserDefaults standardUserDefaults] stringForKey:@"MMWeatherUnit"];
+    unitsSegmentedController.selectedSegmentIndex = [unitString isEqualToString:@"metric"] ? 0 : 1;
+    
+    UIBarButtonItem *unitsBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:unitsSegmentedController];
+    
+    UIBarButtonItem *addBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"plus.png"] style:UIBarButtonItemStylePlain target:self action:@selector(showSearch:)];
+    
+    UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+    
+    [self setToolbarItems:@[unitsBarButtonItem,flexibleSpace, addBarButtonItem]];
+    
+    
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
     
@@ -112,7 +128,7 @@
     // Dispose of any resources that can be recreated.
 }
 
-- (IBAction)changeUnits:(id)sender
+- (void)changeUnits:(id)sender
 {
     NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
     
@@ -208,6 +224,10 @@
 
 
 #pragma mark - Private
+
+- (void)showSearch:(id)sender {
+    [self performSegueWithIdentifier:@"Show Search View" sender:sender];
+}
 
 - (void)refreshWeatherData {
     MMReachabilityHandler *reachabilityHandler = [[MMReachabilityHandler alloc] init];

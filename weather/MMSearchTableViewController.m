@@ -47,11 +47,6 @@
     self.definesPresentationContext = YES;
 }
 
-
-- (void)showKeyboard {
-     [self.searchController.searchBar becomeFirstResponder];
-}
-
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     
@@ -123,6 +118,10 @@
     [self.searchController.searchBar resignFirstResponder];
     
     [self.parentViewController dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)showKeyboard {
+    [self.searchController.searchBar becomeFirstResponder];
 }
 
 @end

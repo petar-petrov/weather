@@ -62,19 +62,7 @@
                             <outlet property="delegate" destination="r97-35-dln" id="PAB-ys-cRb"/>
                         </connections>
                     </tableView>
-                    <toolbarItems>
-                        <barButtonItem title="C/F" id="oi2-Uj-qWr">
-                            <connections>
-                                <action selector="changeUnits:" destination="r97-35-dln" id="sOp-m7-q9J"/>
-                            </connections>
-                        </barButtonItem>
-                        <barButtonItem style="plain" systemItem="flexibleSpace" id="OX2-aE-aJG"/>
-                        <barButtonItem image="plus" id="TUn-dn-Kai">
-                            <connections>
-                                <segue destination="z0l-kw-wv8" kind="presentation" id="3M9-MF-r0d"/>
-                            </connections>
-                        </barButtonItem>
-                    </toolbarItems>
+                    <toolbarItems/>
                     <navigationItem key="navigationItem" title="MMWeather!" id="YMq-sI-EcU">
                         <barButtonItem key="leftBarButtonItem" image="map_location" id="qN0-xE-2O2">
                             <connections>
@@ -84,11 +72,12 @@
                     </navigationItem>
                     <connections>
                         <segue destination="kMu-6A-qGq" kind="show" identifier="DetailedWeather" id="hSk-Ph-5ef"/>
+                        <segue destination="z0l-kw-wv8" kind="show" identifier="Show Search View" id="QdB-RY-pex"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="9UV-RB-nhK" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1336" y="1082"/>
+            <point key="canvasLocation" x="1348" y="1082"/>
         </scene>
         <!--Search Table View Controller-->
         <scene sceneID="s0D-P7-G2A">
@@ -253,7 +242,6 @@
     </scenes>
     <resources>
         <image name="map_location" width="22" height="22"/>
-        <image name="plus" width="22" height="22"/>
     </resources>
     <color key="tintColor" red="0.29803921568627451" green="0.65098039215686276" blue="0.92156862745098034" alpha="1" colorSpace="calibratedRGB"/>
 </document>
