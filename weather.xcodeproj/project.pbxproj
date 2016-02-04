@@ -33,6 +33,7 @@
 		D1AF14321C5F6B50009B82E8 /* Weather.m in Sources */ = {isa = PBXBuildFile; fileRef = D1AF142E1C5F6B50009B82E8 /* Weather.m */; };
 		D1CA462C1C6237C600767FEA /* MMWeatherPin.m in Sources */ = {isa = PBXBuildFile; fileRef = D1CA462B1C6237C600767FEA /* MMWeatherPin.m */; };
 		D1CA462E1C62473800767FEA /* 10d.png in Resources */ = {isa = PBXBuildFile; fileRef = D1CA462D1C62473800767FEA /* 10d.png */; };
+		D1CA46311C636C6F00767FEA /* MMWeatherAnnotationView.m in Sources */ = {isa = PBXBuildFile; fileRef = D1CA46301C636C6E00767FEA /* MMWeatherAnnotationView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -100,6 +101,8 @@
 		D1CA462A1C6237C600767FEA /* MMWeatherPin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MMWeatherPin.h; sourceTree = "<group>"; };
 		D1CA462B1C6237C600767FEA /* MMWeatherPin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMWeatherPin.m; sourceTree = "<group>"; };
 		D1CA462D1C62473800767FEA /* 10d.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 10d.png; sourceTree = "<group>"; };
+		D1CA462F1C636C6E00767FEA /* MMWeatherAnnotationView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MMWeatherAnnotationView.h; sourceTree = "<group>"; };
+		D1CA46301C636C6E00767FEA /* MMWeatherAnnotationView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMWeatherAnnotationView.m; sourceTree = "<group>"; };
 		DA3AB2AA1EC304ABBC823E6B /* Pods-weather.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-weather.debug.xcconfig"; path = "Pods/Target Support Files/Pods-weather/Pods-weather.debug.xcconfig"; sourceTree = "<group>"; };
 		ED8549ECC32C4593CF1FA8F5 /* Pods-weather.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-weather.release.xcconfig"; path = "Pods/Target Support Files/Pods-weather/Pods-weather.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -203,6 +206,8 @@
 				D1AF14251C5CB514009B82E8 /* MMDetailedWeatherViewController.m */,
 				D1CA462A1C6237C600767FEA /* MMWeatherPin.h */,
 				D1CA462B1C6237C600767FEA /* MMWeatherPin.m */,
+				D1CA462F1C636C6E00767FEA /* MMWeatherAnnotationView.h */,
+				D1CA46301C636C6E00767FEA /* MMWeatherAnnotationView.m */,
 			);
 			path = weather;
 			sourceTree = "<group>";
@@ -461,6 +466,7 @@
 				D186BFA11C5A4EA900A99C66 /* MMMainTableViewController.m in Sources */,
 				D148CA2D1C58EA760074490B /* AppDelegate.m in Sources */,
 				D15A0DF81C6104320041E615 /* MMReachabilityHandler.m in Sources */,
+				D1CA46311C636C6F00767FEA /* MMWeatherAnnotationView.m in Sources */,
 				D148CA2A1C58EA760074490B /* main.m in Sources */,
 				D1CA462C1C6237C600767FEA /* MMWeatherPin.m in Sources */,
 				D1AF14121C5B94A7009B82E8 /* UIImageView+Networking.m in Sources */,

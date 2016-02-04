@@ -8,6 +8,7 @@
 
 #import "MMMapViewController.h"
 #import "MMWeatherPin.h"
+#import "MMWeatherAnnotationView.h"
 
 @import MapKit;
 
@@ -43,12 +44,12 @@
     if ([annotation isKindOfClass:[MMWeatherPin class]]) {
         MMWeatherPin *weatherPin = (MMWeatherPin *)annotation;
         
-        MKAnnotationView *annotationView = [mapView dequeueReusableAnnotationViewWithIdentifier:@"WeatherAnnotation"];
+        MMWeatherAnnotationView *annotationView = (MMWeatherAnnotationView *)[mapView dequeueReusableAnnotationViewWithIdentifier:@"WeatherAnnotation"];
         
         if (annotationView == nil) {
             annotationView = [self annotationViewWithAnnotation:weatherPin];
         } else {
-            annotationView.annotation = weatherPin;
+            [annotationView updateWithAnnotation:weatherPin];;
         }
         
         return annotationView;
@@ -57,15 +58,10 @@
     return nil;
 }
 
-- (MKAnnotationView *)annotationViewWithAnnotation:(id <MKAnnotation>)annotation {
-    
-    MMWeatherPin *weatherPin = (MMWeatherPin *)annotation;
-    
-    MKAnnotationView *annotationView = [[MKAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"WeatherAnnotation"];
+- (MMWeatherAnnotationView *)annotationViewWithAnnotation:(id <MKAnnotation>)annotation {
+    MMWeatherAnnotationView *annotationView = [[MMWeatherAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"WeatherAnnotation"];
     
     annotationView.enabled = YES;
-    annotationView.canShowCallout = YES;
-    annotationView.image = [UIImage imageNamed:weatherPin.imageName];
     
     return annotationView;
 }

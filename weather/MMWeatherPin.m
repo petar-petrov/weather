@@ -41,6 +41,7 @@
     self.subtitle = ((Weather *)self.city.currentWeather).temp.stringValue;
     
     self.coordinate = CLLocationCoordinate2DMake(self.city.longitude.doubleValue, self.city.latitude.doubleValue);
-    self.imageName = @"10d.png";
+    self.imageName = ((Weather *)self.city.currentWeather).icon;
+    self.temp = ((Weather *)self.city.currentWeather).temp;
 }
 @end

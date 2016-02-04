@@ -89,6 +89,8 @@
     
     //self.refreshControl = refreshControl;
     
+//    [[UINavigationBar appearance] setBarTintColor:[[UIColor alloc]initWithRed: 0.219034 green: 0.598590 blue: 0.815217 alpha: 1 ]];
+//    [[UINavigationBar appearance] setTranslucent:NO];
     
 }
 

@@ -18,6 +18,8 @@
 @property (copy, nonatomic) NSString *title;;
 @property (copy, nonatomic) NSString *subtitle;
 @property (copy, nonatomic) NSString *imageName;
+@property (strong, nonatomic) NSNumber *temp;
+
 
 - (instancetype)initWithCity:(City *)city;
 
