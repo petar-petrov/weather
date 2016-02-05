@@ -31,6 +31,7 @@
 		D1AF14301C5F6B50009B82E8 /* City.m in Sources */ = {isa = PBXBuildFile; fileRef = D1AF142A1C5F6B50009B82E8 /* City.m */; };
 		D1AF14311C5F6B50009B82E8 /* Weather+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = D1AF142C1C5F6B50009B82E8 /* Weather+CoreDataProperties.m */; };
 		D1AF14321C5F6B50009B82E8 /* Weather.m in Sources */ = {isa = PBXBuildFile; fileRef = D1AF142E1C5F6B50009B82E8 /* Weather.m */; };
+		D1B8C8271C64D6310022FF64 /* MMCityManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D1B8C8261C64D6310022FF64 /* MMCityManager.m */; };
 		D1CA462C1C6237C600767FEA /* MMWeatherPin.m in Sources */ = {isa = PBXBuildFile; fileRef = D1CA462B1C6237C600767FEA /* MMWeatherPin.m */; };
 		D1CA462E1C62473800767FEA /* 10d.png in Resources */ = {isa = PBXBuildFile; fileRef = D1CA462D1C62473800767FEA /* 10d.png */; };
 		D1CA46311C636C6F00767FEA /* MMWeatherAnnotationView.m in Sources */ = {isa = PBXBuildFile; fileRef = D1CA46301C636C6E00767FEA /* MMWeatherAnnotationView.m */; };
@@ -98,6 +99,8 @@
 		D1AF142C1C5F6B50009B82E8 /* Weather+CoreDataProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "Weather+CoreDataProperties.m"; path = "../Weather+CoreDataProperties.m"; sourceTree = "<group>"; };
 		D1AF142D1C5F6B50009B82E8 /* Weather.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Weather.h; path = ../Weather.h; sourceTree = "<group>"; };
 		D1AF142E1C5F6B50009B82E8 /* Weather.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Weather.m; path = ../Weather.m; sourceTree = "<group>"; };
+		D1B8C8251C64D6310022FF64 /* MMCityManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MMCityManager.h; sourceTree = "<group>"; };
+		D1B8C8261C64D6310022FF64 /* MMCityManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMCityManager.m; sourceTree = "<group>"; };
 		D1CA462A1C6237C600767FEA /* MMWeatherPin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MMWeatherPin.h; sourceTree = "<group>"; };
 		D1CA462B1C6237C600767FEA /* MMWeatherPin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMWeatherPin.m; sourceTree = "<group>"; };
 		D1CA462D1C62473800767FEA /* 10d.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 10d.png; sourceTree = "<group>"; };
@@ -195,6 +198,8 @@
 				D186BFA91C5A5AC300A99C66 /* MMOpenWeatherMapManager.m */,
 				D15A0DF61C6104320041E615 /* MMReachabilityHandler.h */,
 				D15A0DF71C6104320041E615 /* MMReachabilityHandler.m */,
+				D1B8C8251C64D6310022FF64 /* MMCityManager.h */,
+				D1B8C8261C64D6310022FF64 /* MMCityManager.m */,
 				D186BF8E1C5A3B6E00A99C66 /* DataStore */,
 				D148CA281C58EA760074490B /* Supporting Files */,
 				D186BF881C59301B00A99C66 /* MMSearchTableViewController.h */,
@@ -342,6 +347,11 @@
 				TargetAttributes = {
 					D148CA241C58EA760074490B = {
 						CreatedOnToolsVersion = 7.2;
+						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
+						};
 					};
 					D148CA3D1C58EA760074490B = {
 						CreatedOnToolsVersion = 7.2;
@@ -469,6 +479,7 @@
 				D1CA46311C636C6F00767FEA /* MMWeatherAnnotationView.m in Sources */,
 				D148CA2A1C58EA760074490B /* main.m in Sources */,
 				D1CA462C1C6237C600767FEA /* MMWeatherPin.m in Sources */,
+				D1B8C8271C64D6310022FF64 /* MMCityManager.m in Sources */,
 				D1AF14121C5B94A7009B82E8 /* UIImageView+Networking.m in Sources */,
 				D1AF14301C5F6B50009B82E8 /* City.m in Sources */,
 				D186BF8A1C59301B00A99C66 /* MMSearchTableViewController.m in Sources */,

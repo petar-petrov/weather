@@ -11,6 +11,8 @@
 #import "City.h"
 #import "MMOpenWeatherMapManager.h"
 
+#import "MMCityManager.h"
+
 @interface MMSearchTableViewController () <UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate>
 
 @property (strong, nonatomic) UISearchController *searchController;
@@ -60,7 +62,7 @@
     
     NSDictionary *cityData = self.cities[indexPath.row][@"cityData"];
     
-    [self.dataStore addCityWithInfo:cityData];
+    [[MMCityManager defaultManager] addCityWithInfo:cityData];
     
     [self dismissViewController];
 }

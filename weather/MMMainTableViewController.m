@@ -18,6 +18,7 @@
 #import "Weather.h"
 #import "MMReachabilityHandler.h"
 
+#import "MMCityManager.h"
 
 #import <Reachability/Reachability.h>
 
@@ -29,6 +30,8 @@
 @property (strong, nonatomic) UIView *footerView;
 
 @property (strong, nonatomic) NSIndexPath *currentlySelectedIndexPath;
+
+@property (strong, nonatomic) UIRefreshControl *weatherRefreshControl;
 
 @end
 
@@ -68,34 +71,33 @@
     
     __autoreleasing NSError *error = nil;
     
-    if (![self.fetchedResultController performFetch:nil]) {
+    if (![self.fetchedResultController performFetch:&error]) {
         NSLog(@"Unresolved error %@ : %@", error, [error userInfo]);
         abort();
     }
-    
     
     [self.tableView registerClass:[MMWeatherTableViewCell class] forCellReuseIdentifier:@"WeatherCell"];
     
     [self setupToolbar];
     
-    // Uncomment the following line to preserve selection between presentations.
-    // self.clearsSelectionOnViewWillAppear = NO;
+    self.weatherRefreshControl = [[UIRefreshControl alloc] init];
+    [self.weatherRefreshControl addTarget:self action:@selector(pullDownRefresh) forControlEvents:UIControlEventValueChanged];
     
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    self.refreshControl = self.weatherRefreshControl;
     
-//    UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
-//    [refreshControl addTarget:self action:@selector(refreshWeather) forControlEvents:UIControlEventValueChanged];
-    
-    //self.refreshControl = refreshControl;
-    
-//    [[UINavigationBar appearance] setBarTintColor:[[UIColor alloc]initWithRed: 0.219034 green: 0.598590 blue: 0.815217 alpha: 1 ]];
-//    [[UINavigationBar appearance] setTranslucent:NO];
-    
+    [self configureNavgationBarTitle];
+}
+
+- (void)pullDownRefresh {
+    [self.manager updateAllCitiesWithCompletionHandler:^{
+        [self.weatherRefreshControl endRefreshing];
+    }];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
+    
+    NSLog(@"view did appear");
     
     [self refreshWeatherData];
 }
@@ -210,14 +212,29 @@
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
     if (editingStyle == UITableViewCellEditingStyleDelete) {
-        [self.fetchedResultController.managedObjectContext deleteObject:[self.fetchedResultController objectAtIndexPath:indexPath]];
+        City *city = [self.fetchedResultController objectAtIndexPath:indexPath];
         
-        [self.dataStore saveContext];
+        [[MMCityManager defaultManager] deleteCity:city error:nil];
     }
 }
 
 
 #pragma mark - Private
+
+- (void)configureNavgationBarTitle {
+    NSMutableAttributedString *titleAttributedString = [[NSMutableAttributedString alloc] initWithString:@"MMWeather!"];
+    
+    [titleAttributedString addAttributes:@{NSForegroundColorAttributeName : [UIColor blackColor]} range:NSMakeRange(0, 2)];
+    [titleAttributedString addAttributes:@{NSForegroundColorAttributeName : [UIColor whiteColor]} range:NSMakeRange(2, titleAttributedString.length - 2)];
+    [titleAttributedString addAttributes:@{NSFontAttributeName : [UIFont fontWithName:@"Futura-CondensedExtraBold" size:20.0f]} range:NSMakeRange(0, titleAttributedString.length)];
+    
+    UILabel *titleLabel = [[UILabel alloc] init];
+    titleLabel.attributedText = titleAttributedString;
+    
+    [titleLabel sizeToFit];
+    
+    self.navigationItem.titleView = titleLabel;
+}
 
 - (void)setupToolbar {
     UISegmentedControl *unitsSegmentedController = [[UISegmentedControl alloc] initWithItems:@[@"ºC", @"ºF"]];
@@ -242,10 +259,12 @@
 }
 
 - (void)refreshWeatherData {
+    NSLog(@"Refresh weather data");
+    
     MMReachabilityHandler *reachabilityHandler = [[MMReachabilityHandler alloc] init];
     
     [reachabilityHandler performReachabilityCheckWithReachableBlock:^{
-                                                        [self.manager updateAllCities];
+                                                        [self.manager updateAllCitiesWithCompletionHandler:nil];
                                                     }
                                                    unreachableBlock:^ {
                                                         [self showAlertView];
@@ -285,7 +304,7 @@ static NSString *const iconURLStringBase = @"http://openweathermap.org/img/w/";
     
     NSInteger temp = currentWeather.temp.integerValue;
     
-    cell.temperatureLabel.text = [NSString stringWithFormat:@"%ldº", temp];
+    cell.temperatureLabel.text = [NSString stringWithFormat:@"%ldº", (long)temp];
     
     NSString *urlString = [self urlStringForIcon:currentWeather.icon];
     
@@ -315,6 +334,7 @@ static NSString *const iconURLStringBase = @"http://openweathermap.org/img/w/";
             break;
             
         case NSFetchedResultsChangeUpdate:
+            NSLog(@"UPDATED CITY");
             [self configureCell:[tableView cellForRowAtIndexPath:indexPath] atIndexPath:indexPath];
             break;
             

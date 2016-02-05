@@ -7,9 +7,8 @@
 //
 
 #import "MMOpenWeatherMapManager.h"
-#import "MMWeatherCoreData.h"
 
-#import "City.h"
+#import "MMCityManager.h"
 
 @import UIKit;
 
@@ -17,40 +16,34 @@
 
 @property (strong, nonatomic) NSURLSessionDataTask *dataTask;
 
-@property (strong, nonatomic) MMWeatherCoreData *dataStore;
-
 @end
 
 @implementation MMOpenWeatherMapManager
 
-- (instancetype)init {
-    self = [super init];
-    
-    if (self) {
-        _dataStore = [[MMWeatherCoreData alloc] init];
-    }
-    
-    return self;
-}
-
 static NSString *const appid = @"36eea9dcce34a3ec067b176eda6c1987";
 
-- (void)updateAllCities {
-    NSArray *cities = [self fetchAllCitiesInManagedObjectContext:self.dataStore.managedObjectContext];
-    
-    __weak MMOpenWeatherMapManager *weakSelf = self;
+- (void)updateAllCitiesWithCompletionHandler:(void (^)(void))block {
+        
+    NSArray *cities = [[MMCityManager defaultManager] allCities];
     
     for (City *city in cities) {
         [self fetchWeatherForecaseForCity:city.name completionHandler:^(NSDictionary *weatherInfo){
-
-            __strong MMOpenWeatherMapManager *strongSelf = weakSelf;
             
             if (weatherInfo != nil) {
-                [strongSelf.dataStore cityWithName:city.name updateForecast:weatherInfo];   
+                
+                [[MMCityManager defaultManager] cityWithName:city.name updateForecast:weatherInfo];
             }
-
+            
         }];
     }
+        
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSLog(@"ALL Cities updated");
+        if (block != nil) {
+            block();
+        }
+    });
+    
 }
 
 - (void)fetchWeatherForecaseForCity:(NSString *)name  completionHandler:(void (^) (NSDictionary *))handler {
@@ -70,20 +63,22 @@ static NSString *const appid = @"36eea9dcce34a3ec067b176eda6c1987";
     
     NSURLSessionDataTask *dataTask = [session dataTaskWithURL:url
                                             completionHandler:^(NSData *data, NSURLResponse *response, NSError *error){
-                                                
-                                                if (error) {
-                                                    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-                                                } else {
-                                                    id result = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-                                                    
-                                                    dispatch_async(dispatch_get_main_queue(), ^{
-                                                        if (handler != nil) {
-                                                            handler(result);
-                                                            
-                                                            [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-                                                        }
-                                                    });
+                                                if (error != nil) {
+                                                    return;
                                                 }
+                                                
+                                                id result = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+                                                
+                                                dispatch_async(dispatch_get_main_queue(), ^{
+                                                    if (handler != nil) {
+                                                        handler(result);
+                                                        
+                                                        [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+                                                        
+                                                        NSLog(@"City Updated");
+                                                    }
+                                                });
+                                                
                                             }];
     [dataTask resume];
 }
@@ -161,20 +156,6 @@ static NSString *const appid = @"36eea9dcce34a3ec067b176eda6c1987";
     }
     
     return urlComponents.URL;
-}
-
-- (NSArray *)fetchAllCitiesInManagedObjectContext:(NSManagedObjectContext *)context {
-    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-    NSEntityDescription *entity = [NSEntityDescription entityForName:@"City" inManagedObjectContext:context];
-    
-    fetchRequest.entity = entity;
-    
-    NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"name" ascending:YES];
-    fetchRequest.sortDescriptors = @[sortDescriptor];
-    
-    NSArray *fetchedObjects = [context executeFetchRequest:fetchRequest error:nil];
-    
-    return fetchedObjects;
 }
 
 @end

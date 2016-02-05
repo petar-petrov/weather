@@ -35,7 +35,7 @@
     Weather *currentWeather = (Weather *)self.city.currentWeather;
     
     NSInteger temp = currentWeather.temp.integerValue;
-    self.temperatureLabel.text = [NSString stringWithFormat:@"%ldº", temp];
+    self.temperatureLabel.text = [NSString stringWithFormat:@"%ldº", (long)temp];
     self.descriptionLabel.text = currentWeather.weatherDescription;
     
     [self.iconImageView setImageWithURLString:[self urlStringForIcon:currentWeather.icon ] placeholder:nil];

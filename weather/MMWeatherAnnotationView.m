@@ -58,7 +58,7 @@
         [self addSubview:_iconImageView];
         
         _tempLabel = [[UILabel alloc] initWithFrame:CGRectZero];
-        _tempLabel.text = [NSString stringWithFormat:@"%ldº", weatherAnnotation.temp.integerValue];
+        _tempLabel.text = [NSString stringWithFormat:@"%ldº", (long)weatherAnnotation.temp.integerValue];
         _tempLabel.textColor = [UIColor grayColor];
         _tempLabel.font = [UIFont boldSystemFontOfSize:13.0f];
         _tempLabel.minimumScaleFactor = 0.5f;

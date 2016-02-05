@@ -14,7 +14,7 @@
 
 - (void)fetchWeatherForecaseForCity:(NSString *)name completionHandler:(void (^) (NSDictionary *))handler;
 
-- (void)updateAllCities;
+- (void)updateAllCitiesWithCompletionHandler:(void (^)(void))block;
 
 - (void)searchForCityWithText:(NSString *)text completionHandler:(void(^)(NSArray *))handler;
 

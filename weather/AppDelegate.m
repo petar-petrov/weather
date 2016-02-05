@@ -7,6 +7,7 @@
 //
 
 #import "AppDelegate.h"
+#import "MMOpenWeatherMapManager.h"
 
 @interface AppDelegate ()
 
@@ -21,6 +22,8 @@
     if ([[NSUserDefaults standardUserDefaults] stringForKey:@"MMWeatherUnit"] == nil) {
         [[NSUserDefaults standardUserDefaults] setObject:@"metric" forKey:@"MMWeatherUnit"];
     }
+    
+    [[UIApplication sharedApplication] setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
     
     return YES;
 }
@@ -45,6 +48,17 @@
 
 - (void)applicationWillTerminate:(UIApplication *)application {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+}
+
+- (void)application:(UIApplication *)application performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
+    
+    
+    MMOpenWeatherMapManager *manager = [[MMOpenWeatherMapManager alloc] init];
+    [manager updateAllCitiesWithCompletionHandler:^{
+        NSLog(@"Background Fetch performed");
+        
+        completionHandler(UIBackgroundFetchResultNewData);
+    }];
 }
 
 @end
