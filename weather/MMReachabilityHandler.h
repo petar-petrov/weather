@@ -11,6 +11,6 @@
 
 @interface MMReachabilityHandler : NSObject
 
-- (void)performReachabilityCheckWithReachableBlock:(void (^)(void))reachableBlock unreachableBlock:(void (^)(void))unreachableBlock;
++ (void)performReachabilityCheckWithReachableBlock:(void (^)(void))reachableBlock unreachableBlock:(void (^)(void))unreachableBlock;
 
 @end

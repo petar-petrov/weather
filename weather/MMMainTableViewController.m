@@ -16,11 +16,16 @@
 #import "MMReachabilityHandler.h"
 
 #import "MMCityManager.h"
+#import "MMUnitsManager.h"
+
+@import CoreData;
 
 @interface MMMainTableViewController () <NSFetchedResultsControllerDelegate>
 
-@property (strong, nonatomic) MMWeatherCoreData *dataStore;
-@property (strong, nonatomic) MMOpenWeatherMapManager *manager;
+@property (strong, nonatomic) NSFetchedResultsController *fetchedResultController;
+
+@property (nonatomic, readonly) MMWeatherCoreData *dataStore;
+@property (nonatomic, readonly) MMOpenWeatherMapManager *manager;
 
 @property (strong, nonatomic) UIView *footerView;
 
@@ -32,37 +37,46 @@
 
 @implementation MMMainTableViewController
 
+static NSString *const reuseIdentifier = @"WeatherCell";
+
+#pragma mark - Custom Accessors
+
+- (MMWeatherCoreData *)dataStore {
+    return [MMWeatherCoreData defaultDataStore];
+}
+
+- (MMOpenWeatherMapManager *)manager {
+    return [MMOpenWeatherMapManager sharedManager];
+}
+
 - (NSFetchedResultsController *)fetchedResultController {
-    if (_fetchedResultController != nil) {
-        return _fetchedResultController;
+    if (_fetchedResultController == nil) {
+        
+        NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+        NSEntityDescription * entity = [NSEntityDescription entityForName:NSStringFromClass([City class]) inManagedObjectContext:self.dataStore.mainContext];
+        
+        fetchRequest.entity = entity;
+        
+        NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"name" ascending:YES];
+        fetchRequest.sortDescriptors = @[sortDescriptor];
+        
+        [fetchRequest setFetchBatchSize:20];
+        
+        _fetchedResultController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
+                                                                       managedObjectContext:self.dataStore.mainContext
+                                                                         sectionNameKeyPath:nil
+                                                                                  cacheName:nil];
+        
+        _fetchedResultController.delegate = self;
     }
-    
-    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-    NSEntityDescription * entity = [NSEntityDescription entityForName:@"City" inManagedObjectContext:self.dataStore.managedObjectContext];
-    
-    fetchRequest.entity = entity;
-    
-    NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"name" ascending:YES];
-    fetchRequest.sortDescriptors = @[sortDescriptor];
-    
-    [fetchRequest setFetchBatchSize:20];
-    
-    _fetchedResultController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
-                                                                   managedObjectContext:self.dataStore.managedObjectContext
-                                                                     sectionNameKeyPath:nil
-                                                                              cacheName:nil];
-    
-    _fetchedResultController.delegate = self;
     
     return _fetchedResultController;
 }
 
+#pragma mark - Life Cycle
+
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-    self.manager = [[MMOpenWeatherMapManager alloc] init];
-    
-    self.dataStore = [[MMWeatherCoreData alloc] init];
     
     __autoreleasing NSError *error = nil;
     
@@ -71,7 +85,7 @@
         abort();
     }
     
-    [self.tableView registerClass:[MMWeatherTableViewCell class] forCellReuseIdentifier:@"WeatherCell"];
+    [self.tableView registerClass:[MMWeatherTableViewCell class] forCellReuseIdentifier:reuseIdentifier];
     
     [self setupToolbar];
     
@@ -91,8 +105,6 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    
-    NSLog(@"view did appear");
     
     [self refreshWeatherData];
 }
@@ -114,19 +126,13 @@
     // Dispose of any resources that can be recreated.
 }
 
-- (void)changeUnits:(id)sender
+- (void)changeUnits:(UISegmentedControl *)sender
 {
-    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-    
-    NSString *unitString = [userDefaults stringForKey:@"MMWeatherUnit"];
-    
-    if ([unitString isEqualToString:@"metric"]) {
-        [userDefaults setObject:@"imperial" forKey:@"MMWeatherUnit"];
+    if (sender.selectedSegmentIndex == 0) {
+        [[MMUnitsManager sharedManager] setUnits:kUnitsMetric];
     } else {
-        [userDefaults setObject:@"metric" forKey:@"MMWeatherUnit"];
+        [[MMUnitsManager sharedManager] setUnits:kUnitsImperial];
     }
-    
-    [userDefaults synchronize];
     
     [self refreshWeatherData];
     
@@ -190,9 +196,7 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    static NSString *identifier = @"WeatherCell";
-    
-    MMWeatherTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier forIndexPath:indexPath];
+    MMWeatherTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:reuseIdentifier forIndexPath:indexPath];
     
     [self configureCell:cell atIndexPath:indexPath];
     
@@ -236,9 +240,8 @@
     [unitsSegmentedController setWidth:44.0f forSegmentAtIndex:0];
     [unitsSegmentedController setWidth:44.0f forSegmentAtIndex:1];
     [unitsSegmentedController addTarget:self action:@selector(changeUnits:) forControlEvents:UIControlEventValueChanged];
-    
-    NSString *unitString = [[NSUserDefaults standardUserDefaults] stringForKey:@"MMWeatherUnit"];
-    unitsSegmentedController.selectedSegmentIndex = [unitString isEqualToString:@"metric"] ? 0 : 1;
+
+    unitsSegmentedController.selectedSegmentIndex = ([[MMUnitsManager sharedManager].currentUnit isEqualToString:kUnitsMetric]) ? 0 : 1;
     
     UIBarButtonItem *unitsBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:unitsSegmentedController];
     
@@ -250,15 +253,11 @@
 }
 
 - (void)showSearch:(id)sender {
-    [self performSegueWithIdentifier:@"Show Search View" sender:sender];
+    [self performSegueWithIdentifier:@"ShowSearchView" sender:sender];
 }
 
 - (void)refreshWeatherData {
-    NSLog(@"Refresh weather data");
-    
-    MMReachabilityHandler *reachabilityHandler = [[MMReachabilityHandler alloc] init];
-    
-    [reachabilityHandler performReachabilityCheckWithReachableBlock:^{
+    [MMReachabilityHandler performReachabilityCheckWithReachableBlock:^{
                                                         [self.manager updateAllCitiesWithCompletionHandler:nil];
                                                     }
                                                    unreachableBlock:^ {
@@ -283,13 +282,6 @@
     [self presentViewController:alert animated:YES completion:nil];
 }
 
-static NSString *const iconURLStringBase = @"http://openweathermap.org/img/w/";
-
-- (NSString *)urlStringForIcon:(NSString *)icon {
-    
-    return [NSString stringWithFormat:@"%@%@.png", iconURLStringBase, icon];
-}
-
 - (void)configureCell:(MMWeatherTableViewCell *)cell atIndexPath:(NSIndexPath *)indexPath {
     City *city = (City *)[self.fetchedResultController objectAtIndexPath:indexPath];
     
@@ -301,7 +293,7 @@ static NSString *const iconURLStringBase = @"http://openweathermap.org/img/w/";
     
     cell.temperatureLabel.text = [NSString stringWithFormat:@"%ldº", (long)temp];
     
-    NSString *urlString = [self urlStringForIcon:currentWeather.icon];
+    NSString *urlString = [[MMCityManager defaultManager] iconURLStringForCity:city];
     
     [cell.iconImageView setImageWithURLString:urlString placeholder:nil];
 }
@@ -329,7 +321,6 @@ static NSString *const iconURLStringBase = @"http://openweathermap.org/img/w/";
             break;
             
         case NSFetchedResultsChangeUpdate:
-            NSLog(@"UPDATED CITY");
             [self configureCell:[tableView cellForRowAtIndexPath:indexPath] atIndexPath:indexPath];
             break;
             

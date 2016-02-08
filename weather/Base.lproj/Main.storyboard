@@ -73,7 +73,7 @@
                     </navigationItem>
                     <connections>
                         <segue destination="kMu-6A-qGq" kind="show" identifier="DetailedWeather" id="hSk-Ph-5ef"/>
-                        <segue destination="z0l-kw-wv8" kind="presentation" identifier="Show Search View" id="QdB-RY-pex"/>
+                        <segue destination="z0l-kw-wv8" kind="presentation" identifier="ShowSearchView" id="QdB-RY-pex"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="9UV-RB-nhK" userLabel="First Responder" sceneMemberID="firstResponder"/>

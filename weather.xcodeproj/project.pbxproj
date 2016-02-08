@@ -33,6 +33,7 @@
 		D1AF14321C5F6B50009B82E8 /* Weather.m in Sources */ = {isa = PBXBuildFile; fileRef = D1AF142E1C5F6B50009B82E8 /* Weather.m */; };
 		D1B8C8271C64D6310022FF64 /* MMCityManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D1B8C8261C64D6310022FF64 /* MMCityManager.m */; };
 		D1B8C82A1C68A2D10022FF64 /* MMWeatherForecastCollectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D1B8C8291C68A2D10022FF64 /* MMWeatherForecastCollectionViewController.m */; };
+		D1B8C82E1C68C9DD0022FF64 /* MMUnitsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D1B8C82D1C68C9DD0022FF64 /* MMUnitsManager.m */; };
 		D1CA462C1C6237C600767FEA /* MMWeatherAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = D1CA462B1C6237C600767FEA /* MMWeatherAnnotation.m */; };
 		D1CA462E1C62473800767FEA /* 10d.png in Resources */ = {isa = PBXBuildFile; fileRef = D1CA462D1C62473800767FEA /* 10d.png */; };
 		D1CA46311C636C6F00767FEA /* MMWeatherAnnotationView.m in Sources */ = {isa = PBXBuildFile; fileRef = D1CA46301C636C6E00767FEA /* MMWeatherAnnotationView.m */; };
@@ -104,6 +105,8 @@
 		D1B8C8261C64D6310022FF64 /* MMCityManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMCityManager.m; sourceTree = "<group>"; };
 		D1B8C8281C68A2D10022FF64 /* MMWeatherForecastCollectionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MMWeatherForecastCollectionViewController.h; sourceTree = "<group>"; };
 		D1B8C8291C68A2D10022FF64 /* MMWeatherForecastCollectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMWeatherForecastCollectionViewController.m; sourceTree = "<group>"; };
+		D1B8C82C1C68C9DD0022FF64 /* MMUnitsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MMUnitsManager.h; sourceTree = "<group>"; };
+		D1B8C82D1C68C9DD0022FF64 /* MMUnitsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMUnitsManager.m; sourceTree = "<group>"; };
 		D1CA462A1C6237C600767FEA /* MMWeatherAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MMWeatherAnnotation.h; sourceTree = "<group>"; };
 		D1CA462B1C6237C600767FEA /* MMWeatherAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMWeatherAnnotation.m; sourceTree = "<group>"; };
 		D1CA462D1C62473800767FEA /* 10d.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 10d.png; sourceTree = "<group>"; };
@@ -187,10 +190,9 @@
 			children = (
 				D186BF981C5A4CD900A99C66 /* NSManagedObjects */,
 				D1AF140F1C5B885A009B82E8 /* CustomTableViewCell */,
+				D1B8C82B1C68C9150022FF64 /* Class Extensions */,
 				D148CA2B1C58EA760074490B /* AppDelegate.h */,
 				D148CA2C1C58EA760074490B /* AppDelegate.m */,
-				D1AF14101C5B94A7009B82E8 /* UIImageView+Networking.h */,
-				D1AF14111C5B94A7009B82E8 /* UIImageView+Networking.m */,
 				D186BF9F1C5A4EA900A99C66 /* MMMainTableViewController.h */,
 				D186BFA01C5A4EA900A99C66 /* MMMainTableViewController.m */,
 				D148CA311C58EA760074490B /* Main.storyboard */,
@@ -218,6 +220,8 @@
 				D1CA46301C636C6E00767FEA /* MMWeatherAnnotationView.m */,
 				D1B8C8281C68A2D10022FF64 /* MMWeatherForecastCollectionViewController.h */,
 				D1B8C8291C68A2D10022FF64 /* MMWeatherForecastCollectionViewController.m */,
+				D1B8C82C1C68C9DD0022FF64 /* MMUnitsManager.h */,
+				D1B8C82D1C68C9DD0022FF64 /* MMUnitsManager.m */,
 			);
 			path = weather;
 			sourceTree = "<group>";
@@ -280,6 +284,15 @@
 				D1AF140D1C5B884E009B82E8 /* MMWeatherTableViewCell.m */,
 			);
 			name = CustomTableViewCell;
+			sourceTree = "<group>";
+		};
+		D1B8C82B1C68C9150022FF64 /* Class Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				D1AF14101C5B94A7009B82E8 /* UIImageView+Networking.h */,
+				D1AF14111C5B94A7009B82E8 /* UIImageView+Networking.m */,
+			);
+			name = "Class Extensions";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -481,6 +494,7 @@
 				D186BFAA1C5A5AC300A99C66 /* MMOpenWeatherMapManager.m in Sources */,
 				D186BFA11C5A4EA900A99C66 /* MMMainTableViewController.m in Sources */,
 				D148CA2D1C58EA760074490B /* AppDelegate.m in Sources */,
+				D1B8C82E1C68C9DD0022FF64 /* MMUnitsManager.m in Sources */,
 				D15A0DF81C6104320041E615 /* MMReachabilityHandler.m in Sources */,
 				D1CA46311C636C6F00767FEA /* MMWeatherAnnotationView.m in Sources */,
 				D148CA2A1C58EA760074490B /* main.m in Sources */,

@@ -8,8 +8,8 @@
 
 #import "MMDetailedWeatherViewController.h"
 
-#import "City.h"
-#import "Weather.h"
+#import "MMCityManager.h"
+#import "MMUnitsManager.h"
 
 #import "UIImageView+Networking.h"
 #import "MMWeatherForecastCollectionViewController.h"
@@ -39,19 +39,11 @@
     self.temperatureLabel.text = [NSString stringWithFormat:@"%ldº", (long)temp];
     self.descriptionLabel.text = currentWeather.weatherDescription;
     
-    [self.iconImageView setImageWithURLString:[self urlStringForIcon:currentWeather.icon ] placeholder:nil];
-    
-    NSString *unitString = nil;
-    
-    if ([[[NSUserDefaults standardUserDefaults] valueForKey:@"MMWeatherUnit"] isEqualToString:@"metric"]) {
-        unitString = @"m/s";
-    } else {
-        unitString = @"mph";
-    }
+    [self.iconImageView setImageWithURLString:[[MMCityManager defaultManager] iconURLStringForCity:self.city] placeholder:nil];
 
-    self.windLabel.text = [currentWeather.windSpeed.stringValue stringByAppendingString:unitString];
-    self.humidityLabel.text = [currentWeather.humidity.stringValue stringByAppendingString:@"%"];
-    self.pressureLabel.text = [currentWeather.pressure.stringValue stringByAppendingString:@"hPa"];
+    self.windLabel.text = [currentWeather.windSpeed.stringValue stringByAppendingString:[MMUnitsManager sharedManager].speedUnit];
+    self.humidityLabel.text = [currentWeather.humidity.stringValue stringByAppendingString:[MMUnitsManager sharedManager].humidityUnit];
+    self.pressureLabel.text = [currentWeather.pressure.stringValue stringByAppendingString:[MMUnitsManager sharedManager].pressureUnit];
     
 //    self.navigationController.toolbarHidden = YES;
     
@@ -82,13 +74,5 @@
     // Pass the selected object to the new view controller.
 }
 */
-
-#pragma mark - Private
-static NSString *const iconURLStringBase = @"http://openweathermap.org/img/w/";
-
-- (NSString *)urlStringForIcon:(NSString *)icon {
-    
-    return [NSString stringWithFormat:@"%@%@.png", iconURLStringBase, icon];
-}
 
 @end

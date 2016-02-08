@@ -12,6 +12,10 @@
 
 @interface MMOpenWeatherMapManager : NSObject
 
++ (instancetype)sharedManager;
+
+- (instancetype)init NS_UNAVAILABLE;
+
 - (void)fetchWeatherForecaseForCity:(NSString *)name completionHandler:(void (^) (NSDictionary *))handler;
 
 - (void)updateAllCitiesWithCompletionHandler:(void (^)(void))block;

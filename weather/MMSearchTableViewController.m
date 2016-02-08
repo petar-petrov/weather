@@ -19,19 +19,27 @@
 
 @property (copy, nonatomic) NSArray *cities;
 
-@property (strong, nonatomic) MMWeatherCoreData *dataStore;
-@property (strong, nonatomic) MMOpenWeatherMapManager *manager;
+@property (nonatomic, readonly) MMWeatherCoreData *dataStore;
+@property (nonatomic, readonly) MMOpenWeatherMapManager *manager;
 
 @end
 
 @implementation MMSearchTableViewController
 
+#pragma mark - Custom Accessor
+
+- (MMWeatherCoreData *)dataStore {
+    return [MMWeatherCoreData defaultDataStore];
+}
+
+- (MMOpenWeatherMapManager *)manager {
+    return [MMOpenWeatherMapManager sharedManager];
+}
+
+#pragma mark - Life Cycle
+
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-    self.manager = [[MMOpenWeatherMapManager alloc] init];
-    
-    self.dataStore = [[MMWeatherCoreData alloc] init];
     
     self.searchController = [[UISearchController alloc] initWithSearchResultsController:nil];
     self.searchController.hidesNavigationBarDuringPresentation = NO;
@@ -68,10 +76,6 @@
 }
 
 #pragma mark - UITableViewDataSource
-
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 1;
-}
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     return [self.cities count];

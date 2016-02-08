@@ -8,11 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
-@import CoreData;
+
 
 @interface MMMainTableViewController : UITableViewController
-
-@property (strong, nonatomic) NSManagedObjectContext *managedObjectContext;
-@property (strong, nonatomic) NSFetchedResultsController *fetchedResultController;
 
 @end

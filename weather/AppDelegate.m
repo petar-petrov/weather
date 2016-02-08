@@ -52,9 +52,7 @@
 
 - (void)application:(UIApplication *)application performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
     
-    
-    MMOpenWeatherMapManager *manager = [[MMOpenWeatherMapManager alloc] init];
-    [manager updateAllCitiesWithCompletionHandler:^{
+    [[MMOpenWeatherMapManager sharedManager] updateAllCitiesWithCompletionHandler:^{
         NSLog(@"Background Fetch performed");
         
         completionHandler(UIBackgroundFetchResultNewData);

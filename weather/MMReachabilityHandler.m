@@ -12,7 +12,7 @@
 
 @implementation MMReachabilityHandler
 
-- (void)performReachabilityCheckWithReachableBlock:(void (^)(void))reachableBlock unreachableBlock:(void (^)(void))unreachableBlock {
++ (void)performReachabilityCheckWithReachableBlock:(void (^)(void))reachableBlock unreachableBlock:(void (^)(void))unreachableBlock {
     Reachability *reach = [Reachability reachabilityWithHostname:@"www.google.com"];
     
     if (reach.isReachable ) {

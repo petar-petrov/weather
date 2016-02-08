@@ -37,16 +37,18 @@
         return;
     }
     
-    City *city = (City *)[NSEntityDescription insertNewObjectForEntityForName:NSStringFromClass([City class]) inManagedObjectContext:self.dataStore.managedObjectContext];
+    City *city = (City *)[NSEntityDescription insertNewObjectForEntityForName:NSStringFromClass([City class]) inManagedObjectContext:self.dataStore.mainContext];
     
-    city.name = info[@"name"];
-    city.cityID = info[@"id"];
-    city.latitude = info[@"coord"][@"lon"];
-    city.longitude = info[@"coord"][@"lat"];
-    
-    city.currentWeather = [self weatherForCityWithInfo:info inManagedObjectContext:self.dataStore.managedObjectContext];
-    
-    [self.dataStore saveContext];
+    if (city) {
+        city.name = info[@"name"];
+        city.cityID = info[@"id"];
+        city.latitude = info[@"coord"][@"lon"];
+        city.longitude = info[@"coord"][@"lat"];
+        
+        city.currentWeather = [self weatherForCityWithInfo:info inManagedObjectContext:self.dataStore.mainContext];
+        
+        [self.dataStore saveContext];
+    }
 }
 
 
@@ -71,22 +73,27 @@
 
 - (NSArray <City *> *)allCities {
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-    NSEntityDescription *entity = [NSEntityDescription entityForName:NSStringFromClass([City class]) inManagedObjectContext:self.dataStore.managedObjectContext];
+    NSEntityDescription *entity = [NSEntityDescription entityForName:NSStringFromClass([City class]) inManagedObjectContext:self.dataStore.mainContext];
     
     fetchRequest.entity = entity;
     
     NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"name" ascending:YES];
     fetchRequest.sortDescriptors = @[sortDescriptor];
     
-    NSArray *fetchedObjects = [self.dataStore.managedObjectContext executeFetchRequest:fetchRequest error:nil];
+    NSArray *fetchedObjects = [self.dataStore.mainContext executeFetchRequest:fetchRequest error:nil];
     
     return fetchedObjects;
 }
 
 - (City *)cityWithName:(NSString *)name {
-    City *city = [self cityWithName:name inContext:self.dataStore.managedObjectContext];
+    City *city = [self cityWithName:name inContext:self.dataStore.mainContext];
     
     return city;
+}
+
+- (City *)cityWithID:(NSInteger)cityID {
+    
+    return nil;
 }
 
 - (BOOL)deleteCityWithName:(NSString *)name error:(NSError **)error {
@@ -97,19 +104,25 @@
 
 - (BOOL)deleteCity:(City *)city error:(NSError **)error {
     
-    City *cityToDelete = [self.dataStore.managedObjectContext existingObjectWithID:city.objectID error:error];
+    City *cityToDelete = [self.dataStore.mainContext existingObjectWithID:city.objectID error:error];
     
     if (error) {
         return NO;
     }
     
-    [self.dataStore.managedObjectContext deleteObject:cityToDelete];
+    [self.dataStore.mainContext deleteObject:cityToDelete];
     
-    if ([self.dataStore.managedObjectContext save:error]) {
+    if ([self.dataStore.mainContext save:error]) {
         return YES;
     }
     
     return NO;
+}
+
+static NSString *const iconURLStringBase = @"http://openweathermap.org/img/w/";
+
+- (NSString *)iconURLStringForCity:(City *)city {
+    return [NSString stringWithFormat:@"%@%@.png", iconURLStringBase, ((Weather *)city.currentWeather).icon];
 }
 
 #pragma mark - Private
@@ -134,9 +147,19 @@
     
     request.predicate = predicate;
     
-    NSArray *fetchedObjects = [context executeFetchRequest:request error:nil]; // check for error
+    NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"name" ascending:YES];
     
-    City *city = [fetchedObjects lastObject];
+    request.sortDescriptors = @[sortDescriptor];
+    
+    __autoreleasing NSError *error = nil;
+    
+    NSArray *fetchedObjects = [context executeFetchRequest:request error:&error];
+    
+    City *city = nil;
+    
+    if (fetchedObjects != nil && error == nil) {
+        city = [fetchedObjects lastObject];
+    }
     
     return city;
 }

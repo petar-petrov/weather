@@ -14,7 +14,9 @@
 
 @interface MMWeatherCoreData : NSObject
 
-@property (strong, nonatomic, readonly) NSManagedObjectContext *managedObjectContext;
++ (instancetype)defaultDataStore;
+
+@property (strong, nonatomic, readonly) NSManagedObjectContext *mainContext;
 
 /*!
  Save the current context

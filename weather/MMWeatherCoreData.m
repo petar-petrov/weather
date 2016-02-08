@@ -23,6 +23,17 @@
 
 #pragma mark - Initilizer
 
++ (instancetype)defaultDataStore {
+    static MMWeatherCoreData *dataStore = nil;
+    
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        dataStore = [[MMWeatherCoreData alloc] init];
+    });
+    
+    return dataStore;
+}
+
 - (instancetype)init {
     self = [super init];
     
@@ -31,6 +42,13 @@
     }
     
     return self;
+}
+
+#pragma mark - Custom Accessors
+
+- (NSManagedObjectContext *)mainContext {
+    
+    return self.managedObjectContext;
 }
 
 #pragma mark - Public

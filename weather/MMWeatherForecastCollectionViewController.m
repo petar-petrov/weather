@@ -16,6 +16,8 @@
 
 static NSString * const reuseIdentifier = @"forecastCell";
 
+#pragma mark - Life Cycle
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     

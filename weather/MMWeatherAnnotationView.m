@@ -7,7 +7,7 @@
 //
 
 #import "MMWeatherAnnotationView.h"
-#import "City.h"
+#import "MMCityManager.h"
 #import "UIImageView+Networking.h"
 
 #import "MMWeatherAnnotation.h"
@@ -50,8 +50,13 @@
         
         [self addSubview:_cityLabel];
         
+        MMCityManager *cityManager = [MMCityManager defaultManager];
+        
+        City *city = [cityManager cityWithName:weatherAnnotation.title];
+        
         _iconImageView = [[UIImageView alloc] initWithFrame:CGRectZero];
-        [_iconImageView setImageWithURLString:[self urlStringForIcon:weatherAnnotation.imageName] placeholder:[UIImage imageNamed:@"10d.png"]];
+        [_iconImageView setImageWithURLString:[cityManager iconURLStringForCity:city]
+                                  placeholder:nil];
         
         _iconImageView.translatesAutoresizingMaskIntoConstraints = NO;
         
@@ -80,7 +85,11 @@
     self.annotation = annotation;
     
     self.cityLabel.text = annotation.title;
-    [self.iconImageView setImageWithURLString:[self urlStringForIcon:annotation.imageName] placeholder:[UIImage imageNamed:@"10d.png"]];
+    
+    MMCityManager *cityManager = [MMCityManager defaultManager];
+    
+    [self.iconImageView setImageWithURLString:[cityManager iconURLStringForCity:[cityManager cityWithName:annotation.title]]
+                                  placeholder:[UIImage imageNamed:@"10d.png"]];
 }
 
 - (void)updateConstraints {
@@ -108,14 +117,6 @@
     }
     
     [super updateConstraints];
-}
-         
-#pragma mark - Private 
-         
-static NSString *const iconURLStringBase = @"http://openweathermap.org/img/w/";
-
-- (NSString *)urlStringForIcon:(NSString *)icon {
-    return [NSString stringWithFormat:@"%@%@.png", iconURLStringBase, icon];
 }
 
 @end

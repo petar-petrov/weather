@@ -26,8 +26,11 @@
 
 - (NSArray <City *> *)allCities;
 - (City *)cityWithName:(NSString *)name;
+- (City *)cityWithID:(NSInteger)cityID; // not implemented
 
 - (BOOL)deleteCityWithName:(NSString *)name error:(NSError **)error;
 - (BOOL)deleteCity:(City *)city error:(NSError **)error;
+
+- (NSString *)iconURLStringForCity:(City *)city;
 
 @end
