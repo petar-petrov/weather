@@ -12,6 +12,7 @@
 #import "Weather.h"
 
 #import "UIImageView+Networking.h"
+#import "MMWeatherForecastCollectionViewController.h"
 
 @interface MMDetailedWeatherViewController ()
 @property (weak, nonatomic) IBOutlet UILabel *temperatureLabel;
@@ -53,6 +54,17 @@
     self.pressureLabel.text = [currentWeather.pressure.stringValue stringByAppendingString:@"hPa"];
     
 //    self.navigationController.toolbarHidden = YES;
+    
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:[NSBundle mainBundle]];
+    
+    MMWeatherForecastCollectionViewController *collectionViewController = (MMWeatherForecastCollectionViewController *)[storyboard instantiateViewControllerWithIdentifier:@"WeatherForecastCollectionView"];
+    
+    [self addChildViewController:collectionViewController];
+    
+    collectionViewController.view.frame = CGRectMake(0.0f, 200.0f, 320, 300);
+    
+    [self.view addSubview:collectionViewController.view];
+    [collectionViewController didMoveToParentViewController:self];
     
 }
 

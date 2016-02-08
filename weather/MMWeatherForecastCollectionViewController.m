@@ -14,7 +14,7 @@
 
 @implementation MMWeatherForecastCollectionViewController
 
-static NSString * const reuseIdentifier = @"WeatherForecastCell";
+static NSString * const reuseIdentifier = @"forecastCell";
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -55,9 +55,12 @@ static NSString * const reuseIdentifier = @"WeatherForecastCell";
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
+    
     UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:reuseIdentifier forIndexPath:indexPath];
     
     ((UILabel *)[cell viewWithTag:101]).text = @"Monday";
+    
+    NSLog(@"Cell");
     
     return cell;
 }

@@ -51,7 +51,7 @@ static NSString *const appid = @"36eea9dcce34a3ec067b176eda6c1987";
 //    }];
     
     dispatch_async(dispatch_get_main_queue(), ^{
-        NSLog(@"ALL Cities updated");
+//        NSLog(@"ALL Cities updated");
         if (block != nil) {
             block();
         }
@@ -88,7 +88,7 @@ static NSString *const appid = @"36eea9dcce34a3ec067b176eda6c1987";
                                                         
                                                         [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
                                                         
-                                                        NSLog(@"City Updated");
+//                                                        NSLog(@"City Updated");
                                                     }
                                                 });
                                                 
@@ -185,11 +185,11 @@ static NSString *const appid = @"36eea9dcce34a3ec067b176eda6c1987";
                                                         
                                                         [citiesArray addObject:result];
                                                         
-                                                        NSLog(@"city data %d", index);
+//                                                        NSLog(@"city data %d", index);
                                                 }];
             [dataTask resume];
             
-            NSLog(@"City %d", index);
+//            NSLog(@"City %d", index);
         }];
         
         if (index > 0) {
@@ -197,11 +197,11 @@ static NSString *const appid = @"36eea9dcce34a3ec067b176eda6c1987";
         }
         
         if (index == (cities.count - 1)) {
-            NSLog(@"Last Iteration");
+//            NSLog(@"Last Iteration");
             [blockOperation setCompletionBlock:^{
                 [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                     if (block != nil) {
-                        NSLog(@"fetched cities %@", citiesArray);
+//                        NSLog(@"fetched cities %@", citiesArray);
                         block([citiesArray copy]);
                     }
                 }];
