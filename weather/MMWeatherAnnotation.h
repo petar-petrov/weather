@@ -12,7 +12,7 @@
 
 @class City;
 
-@interface MMWeatherPin : NSObject <MKAnnotation>
+@interface MMWeatherAnnotation : NSObject <MKAnnotation>
 
 @property (nonatomic, readonly) CLLocationCoordinate2D coordinate;
 @property (copy, nonatomic) NSString *title;;

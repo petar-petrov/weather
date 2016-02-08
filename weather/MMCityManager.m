@@ -51,19 +51,17 @@
 
 
 - (void)cityWithName:(NSString *)name updateForecast:(NSDictionary *)forecastInfo {
-    City *city = [self cityWithName:name];
+    NSManagedObjectContext *privateContext = [self.dataStore privateContext];
     
-    NSManagedObjectContext *backgroundContext = [self.dataStore privateContext];
+    City *city = [self cityWithName:name inContext:privateContext];
     
-    City *bCity = [backgroundContext existingObjectWithID:city.objectID error:nil];
+    Weather *updatedWeather = [self weatherForCityWithInfo:forecastInfo inManagedObjectContext:privateContext];
     
-    Weather *updatedWeather = [self weatherForCityWithInfo:forecastInfo inManagedObjectContext:backgroundContext];
-    
-    bCity.currentWeather = updatedWeather;
+    city.currentWeather = updatedWeather;
     
     __autoreleasing NSError *error = nil;
     
-    [backgroundContext save:&error];
+    [privateContext save:&error];
 }
 
 
@@ -86,18 +84,7 @@
 }
 
 - (City *)cityWithName:(NSString *)name {
-    NSFetchRequest *request = [[NSFetchRequest alloc] init];
-    
-    NSEntityDescription *entity = [NSEntityDescription entityForName:NSStringFromClass([City class]) inManagedObjectContext:self.dataStore.managedObjectContext];
-    request.entity = entity;
-    
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"name == %@", name];
-    
-    request.predicate = predicate;
-    
-    NSArray *fetchedObjects = [self.dataStore.managedObjectContext executeFetchRequest:request error:nil]; // check for error
-    
-    City *city = [fetchedObjects lastObject];
+    City *city = [self cityWithName:name inContext:self.dataStore.managedObjectContext];
     
     return city;
 }
@@ -137,6 +124,23 @@
     return self;
 }
 
+- (City *)cityWithName:(NSString *)name inContext:(NSManagedObjectContext *)context {
+    NSFetchRequest *request = [[NSFetchRequest alloc] init];
+    
+    NSEntityDescription *entity = [NSEntityDescription entityForName:NSStringFromClass([City class]) inManagedObjectContext:context];
+    request.entity = entity;
+    
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"name == %@", name];
+    
+    request.predicate = predicate;
+    
+    NSArray *fetchedObjects = [context executeFetchRequest:request error:nil]; // check for error
+    
+    City *city = [fetchedObjects lastObject];
+    
+    return city;
+}
+
 - (Weather *)weatherForCityWithInfo:(NSDictionary *)info inManagedObjectContext:(NSManagedObjectContext *)context {
     Weather *currentWeather = (Weather *)[NSEntityDescription insertNewObjectForEntityForName:NSStringFromClass([Weather class]) inManagedObjectContext:context];
     
@@ -168,8 +172,6 @@
             break;
         }
     }
-    
-    [context save:nil];
     
     return currentWeather;
 }

@@ -7,7 +7,7 @@
 //
 
 #import "MMMapViewController.h"
-#import "MMWeatherPin.h"
+#import "MMWeatherAnnotation.h"
 #import "MMWeatherAnnotationView.h"
 
 @import MapKit;
@@ -25,13 +25,12 @@
     // Do any additional setup after loading the view.
     
     self.mapView.delegate = self;
-//    self.mapView.showsCompass = YES;
     
     @autoreleasepool {
         for (City *city in self.cities) {
-            MMWeatherPin *weatherPin = [[MMWeatherPin alloc] initWithCity:city];
+            MMWeatherAnnotation *weatherAnnotation= [[MMWeatherAnnotation alloc] initWithCity:city];
             
-            [self.mapView addAnnotation:weatherPin];
+            [self.mapView addAnnotation:weatherAnnotation];
         }
     }
     
@@ -41,15 +40,15 @@
 
 - (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation {
     
-    if ([annotation isKindOfClass:[MMWeatherPin class]]) {
-        MMWeatherPin *weatherPin = (MMWeatherPin *)annotation;
+    if ([annotation isKindOfClass:[MMWeatherAnnotation class]]) {
+        MMWeatherAnnotation *weatherAnnotation = (MMWeatherAnnotation *)annotation;
         
         MMWeatherAnnotationView *annotationView = (MMWeatherAnnotationView *)[mapView dequeueReusableAnnotationViewWithIdentifier:@"WeatherAnnotation"];
         
         if (annotationView == nil) {
-            annotationView = [self annotationViewWithAnnotation:weatherPin];
+            annotationView = [self annotationViewWithAnnotation:weatherAnnotation];
         } else {
-            [annotationView updateWithAnnotation:weatherPin];;
+            [annotationView updateWithAnnotation:weatherAnnotation];;
         }
         
         return annotationView;

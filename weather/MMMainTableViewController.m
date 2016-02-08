@@ -7,20 +7,15 @@
 //
 
 #import "MMMainTableViewController.h"
-#import "MMWeatherCoreData.h"
-#import "City.h"
 #import "MMOpenWeatherMapManager.h"
 #import "MMWeatherTableViewCell.h"
 #import "UIImageView+Networking.h"
 #import "MMDetailedWeatherViewController.h"
 #import "MMMapViewController.h"
 
-#import "Weather.h"
 #import "MMReachabilityHandler.h"
 
 #import "MMCityManager.h"
-
-#import <Reachability/Reachability.h>
 
 @interface MMMainTableViewController () <NSFetchedResultsControllerDelegate>
 
@@ -222,7 +217,7 @@
 #pragma mark - Private
 
 - (void)configureNavgationBarTitle {
-    NSMutableAttributedString *titleAttributedString = [[NSMutableAttributedString alloc] initWithString:@"MMWeather!"];
+    NSMutableAttributedString *titleAttributedString = [[NSMutableAttributedString alloc] initWithString:NSLocalizedString(@"MMWeather!", nil)];
     
     [titleAttributedString addAttributes:@{NSForegroundColorAttributeName : [UIColor blackColor]} range:NSMakeRange(0, 2)];
     [titleAttributedString addAttributes:@{NSForegroundColorAttributeName : [UIColor whiteColor]} range:NSMakeRange(2, titleAttributedString.length - 2)];

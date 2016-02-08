@@ -32,7 +32,8 @@
 		D1AF14311C5F6B50009B82E8 /* Weather+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = D1AF142C1C5F6B50009B82E8 /* Weather+CoreDataProperties.m */; };
 		D1AF14321C5F6B50009B82E8 /* Weather.m in Sources */ = {isa = PBXBuildFile; fileRef = D1AF142E1C5F6B50009B82E8 /* Weather.m */; };
 		D1B8C8271C64D6310022FF64 /* MMCityManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D1B8C8261C64D6310022FF64 /* MMCityManager.m */; };
-		D1CA462C1C6237C600767FEA /* MMWeatherPin.m in Sources */ = {isa = PBXBuildFile; fileRef = D1CA462B1C6237C600767FEA /* MMWeatherPin.m */; };
+		D1B8C82A1C68A2D10022FF64 /* MMWeatherForecastCollectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D1B8C8291C68A2D10022FF64 /* MMWeatherForecastCollectionViewController.m */; };
+		D1CA462C1C6237C600767FEA /* MMWeatherAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = D1CA462B1C6237C600767FEA /* MMWeatherAnnotation.m */; };
 		D1CA462E1C62473800767FEA /* 10d.png in Resources */ = {isa = PBXBuildFile; fileRef = D1CA462D1C62473800767FEA /* 10d.png */; };
 		D1CA46311C636C6F00767FEA /* MMWeatherAnnotationView.m in Sources */ = {isa = PBXBuildFile; fileRef = D1CA46301C636C6E00767FEA /* MMWeatherAnnotationView.m */; };
 /* End PBXBuildFile section */
@@ -101,8 +102,10 @@
 		D1AF142E1C5F6B50009B82E8 /* Weather.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Weather.m; path = ../Weather.m; sourceTree = "<group>"; };
 		D1B8C8251C64D6310022FF64 /* MMCityManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MMCityManager.h; sourceTree = "<group>"; };
 		D1B8C8261C64D6310022FF64 /* MMCityManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMCityManager.m; sourceTree = "<group>"; };
-		D1CA462A1C6237C600767FEA /* MMWeatherPin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MMWeatherPin.h; sourceTree = "<group>"; };
-		D1CA462B1C6237C600767FEA /* MMWeatherPin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMWeatherPin.m; sourceTree = "<group>"; };
+		D1B8C8281C68A2D10022FF64 /* MMWeatherForecastCollectionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MMWeatherForecastCollectionViewController.h; sourceTree = "<group>"; };
+		D1B8C8291C68A2D10022FF64 /* MMWeatherForecastCollectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMWeatherForecastCollectionViewController.m; sourceTree = "<group>"; };
+		D1CA462A1C6237C600767FEA /* MMWeatherAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MMWeatherAnnotation.h; sourceTree = "<group>"; };
+		D1CA462B1C6237C600767FEA /* MMWeatherAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMWeatherAnnotation.m; sourceTree = "<group>"; };
 		D1CA462D1C62473800767FEA /* 10d.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 10d.png; sourceTree = "<group>"; };
 		D1CA462F1C636C6E00767FEA /* MMWeatherAnnotationView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MMWeatherAnnotationView.h; sourceTree = "<group>"; };
 		D1CA46301C636C6E00767FEA /* MMWeatherAnnotationView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMWeatherAnnotationView.m; sourceTree = "<group>"; };
@@ -209,10 +212,12 @@
 				D186BF8F1C5A4C4600A99C66 /* WeatherModel.xcdatamodeld */,
 				D1AF14241C5CB514009B82E8 /* MMDetailedWeatherViewController.h */,
 				D1AF14251C5CB514009B82E8 /* MMDetailedWeatherViewController.m */,
-				D1CA462A1C6237C600767FEA /* MMWeatherPin.h */,
-				D1CA462B1C6237C600767FEA /* MMWeatherPin.m */,
+				D1CA462A1C6237C600767FEA /* MMWeatherAnnotation.h */,
+				D1CA462B1C6237C600767FEA /* MMWeatherAnnotation.m */,
 				D1CA462F1C636C6E00767FEA /* MMWeatherAnnotationView.h */,
 				D1CA46301C636C6E00767FEA /* MMWeatherAnnotationView.m */,
+				D1B8C8281C68A2D10022FF64 /* MMWeatherForecastCollectionViewController.h */,
+				D1B8C8291C68A2D10022FF64 /* MMWeatherForecastCollectionViewController.m */,
 			);
 			path = weather;
 			sourceTree = "<group>";
@@ -470,6 +475,7 @@
 				D186BF911C5A4C4600A99C66 /* WeatherModel.xcdatamodeld in Sources */,
 				D1AF14321C5F6B50009B82E8 /* Weather.m in Sources */,
 				D1AF14231C5BD252009B82E8 /* MMMapViewController.m in Sources */,
+				D1B8C82A1C68A2D10022FF64 /* MMWeatherForecastCollectionViewController.m in Sources */,
 				D1AF14311C5F6B50009B82E8 /* Weather+CoreDataProperties.m in Sources */,
 				D186BF8D1C5A3B6500A99C66 /* MMWeatherCoreData.m in Sources */,
 				D186BFAA1C5A5AC300A99C66 /* MMOpenWeatherMapManager.m in Sources */,
@@ -478,7 +484,7 @@
 				D15A0DF81C6104320041E615 /* MMReachabilityHandler.m in Sources */,
 				D1CA46311C636C6F00767FEA /* MMWeatherAnnotationView.m in Sources */,
 				D148CA2A1C58EA760074490B /* main.m in Sources */,
-				D1CA462C1C6237C600767FEA /* MMWeatherPin.m in Sources */,
+				D1CA462C1C6237C600767FEA /* MMWeatherAnnotation.m in Sources */,
 				D1B8C8271C64D6310022FF64 /* MMCityManager.m in Sources */,
 				D1AF14121C5B94A7009B82E8 /* UIImageView+Networking.m in Sources */,
 				D1AF14301C5F6B50009B82E8 /* City.m in Sources */,

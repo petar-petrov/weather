@@ -8,13 +8,13 @@
 
 #import <MapKit/MapKit.h>
 
-@class MMWeatherPin;
+@class MMWeatherAnnotation;
 
 
 @interface MMWeatherAnnotationView : MKAnnotationView
 
 - (instancetype)initWithAnnotation:(id<MKAnnotation>)annotation reuseIdentifier:(NSString *)reuseIdentifier;
 
-- (void)updateWithAnnotation:(MMWeatherPin *)annotation;
+- (void)updateWithAnnotation:(MMWeatherAnnotation *)annotation;
 
 @end

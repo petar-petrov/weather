@@ -6,12 +6,12 @@
 //  Copyright © 2016 Petar Petrov. All rights reserved.
 //
 
-#import "MMWeatherPin.h"
+#import "MMWeatherAnnotation.h"
 
 #import "City.h"
 #import "Weather.h"
 
-@interface MMWeatherPin ()
+@interface MMWeatherAnnotation ()
 
 @property (nonatomic, readwrite) CLLocationCoordinate2D coordinate;
 
@@ -19,7 +19,7 @@
 
 @end
 
-@implementation MMWeatherPin
+@implementation MMWeatherAnnotation
 
 - (instancetype)initWithCity:(City *)city {
     self = [super init];

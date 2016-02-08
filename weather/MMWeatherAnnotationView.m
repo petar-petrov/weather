@@ -10,7 +10,7 @@
 #import "City.h"
 #import "UIImageView+Networking.h"
 
-#import "MMWeatherPin.h"
+#import "MMWeatherAnnotation.h"
 
 @interface MMWeatherAnnotationView ()
 
@@ -34,7 +34,7 @@
         
         self.bounds = CGRectMake(0.0f, 0.0f, 50.0f, 70.0f);
         
-        MMWeatherPin *weatherAnnotation = (MMWeatherPin *)annotation;
+        MMWeatherAnnotation *weatherAnnotation = (MMWeatherAnnotation *)annotation;
         
         _cityLabel = [[UILabel alloc] initWithFrame:CGRectZero];
         _cityLabel.text = weatherAnnotation.title;
@@ -76,7 +76,7 @@
     return self;
 }
 
-- (void)updateWithAnnotation:(MMWeatherPin *)annotation {
+- (void)updateWithAnnotation:(MMWeatherAnnotation *)annotation {
     self.annotation = annotation;
     
     self.cityLabel.text = annotation.title;

@@ -12,7 +12,7 @@
 
 @import UIKit;
 
-@interface MMOpenWeatherMapManager ()
+@interface MMOpenWeatherMapManager () <NSURLSessionDelegate>
 
 @property (strong, nonatomic) NSURLSessionDataTask *dataTask;
 
@@ -26,6 +26,12 @@ static NSString *const appid = @"36eea9dcce34a3ec067b176eda6c1987";
         
     NSArray *cities = [[MMCityManager defaultManager] allCities];
     
+//    NSMutableArray *cityNames = [[NSMutableArray alloc] init];
+//    
+//    for (City *city in cities) {
+//        [cityNames addObject:city.name];
+//    }
+    
     for (City *city in cities) {
         [self fetchWeatherForecaseForCity:city.name completionHandler:^(NSDictionary *weatherInfo){
             
@@ -36,7 +42,14 @@ static NSString *const appid = @"36eea9dcce34a3ec067b176eda6c1987";
             
         }];
     }
-        
+
+    
+//    [self fetchWeatherForecastForCities:cityNames completionHandler:^(NSArray *cities){
+//        for (NSDictionary *dic in cities) {
+//            [[MMCityManager defaultManager] cityWithName:dic[@"name"] updateForecast:dic];
+//        }
+//    }];
+    
     dispatch_async(dispatch_get_main_queue(), ^{
         NSLog(@"ALL Cities updated");
         if (block != nil) {
@@ -134,6 +147,88 @@ static NSString *const appid = @"36eea9dcce34a3ec067b176eda6c1987";
 }
 
 #pragma mark - Private
+
+- (void)fetchWeatherForecastForCities:(NSArray <NSString *> *)cities completionHandler:(void (^)(NSArray *))block {
+    NSOperationQueue *queue = [NSOperationQueue new];
+    queue.maxConcurrentOperationCount = 1;
+    
+    
+    
+    NSString *unit = [[NSUserDefaults standardUserDefaults] objectForKey:@"MMWeatherUnit"];
+    
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+    
+    __block NSMutableArray *citiesArray = [[NSMutableArray alloc] init];
+    
+    for (int index = 0; index < cities.count; index++) {
+        NSString *cityName = cities[index];
+        
+        NSURL *url = [self constructURLWithPath:@"/data/2.5/weather" queryDictionary:@{@"q" : cityName, @"appid" : appid, @"units" : unit}];
+        
+        NSBlockOperation *blockOperation = [NSBlockOperation blockOperationWithBlock:^{
+            NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+            [configuration setHTTPAdditionalHeaders:@{@"Accept": @"applcatoin/json"}];
+            configuration.HTTPMaximumConnectionsPerHost = 1;
+            
+            
+            NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration
+                                                                  delegate:nil
+                                                             delegateQueue:queue];
+            
+            NSURLSessionDataTask *dataTask = [session dataTaskWithURL:url
+                                                    completionHandler:^(NSData *data, NSURLResponse *response, NSError *error){
+                                                        if (error != nil) {
+                                                            return;
+                                                        }
+                                                        
+                                                        id result = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+                                                        
+                                                        [citiesArray addObject:result];
+                                                        
+                                                        NSLog(@"city data %d", index);
+                                                }];
+            [dataTask resume];
+            
+            NSLog(@"City %d", index);
+        }];
+        
+        if (index > 0) {
+            [blockOperation addDependency:[queue.operations objectAtIndex:0]];
+        }
+        
+        if (index == (cities.count - 1)) {
+            NSLog(@"Last Iteration");
+            [blockOperation setCompletionBlock:^{
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    if (block != nil) {
+                        NSLog(@"fetched cities %@", citiesArray);
+                        block([citiesArray copy]);
+                    }
+                }];
+            }];
+        }
+        
+        [queue addOperation:blockOperation];
+        
+        
+    }
+    
+//    NSBlockOperation *lastOperation = [NSBlockOperation blockOperationWithBlock:^{
+//        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+//            if (block != nil) {
+//                NSLog(@"fetched cities %@", citiesArray);
+//                block([citiesArray copy]);
+//            }
+//        }];
+//        
+//    }];
+//        
+//    [lastOperation addDependency:[queue.operations lastObject]];
+//    
+//    [queue addOperation:lastOperation];
+    
+    
+}
 
 - (NSURL *)constructURLWithPath:(NSString *)path queryDictionary:(NSDictionary *)items {
     NSURLComponents *urlComponents = [[NSURLComponents alloc] init];

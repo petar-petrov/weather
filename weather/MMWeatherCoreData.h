@@ -23,11 +23,4 @@
 
 - (NSManagedObjectContext *)privateContext;
 
-//- (void)addCityWithInfo:(NSDictionary *)info;
-//- (void)cityWithName:(NSString *)name updateForecast:(NSDictionary *)forecastInfo;
-//- (void)cityWithName:(NSString *)name updateFiveDayForecast:(NSArray *)forecastInfo;
-//
-//- (NSArray *)allCities; // not implemented
-//- (City *)cityWithName:(NSString *)name;
-
 @end
