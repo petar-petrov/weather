@@ -38,9 +38,7 @@
     
     Weather *currentWeather = (Weather *)self.city.currentWeather;
     
-    [[MMOpenWeatherMapManager sharedManager] fetchFiveDayForecastForCityWithID:self.city.cityID completionHandler:^{
-        [self.forecastCollectionViewController.collectionView reloadData];
-    }];
+    
     
     NSInteger temp = currentWeather.temp.integerValue;
     self.temperatureLabel.text = [NSString stringWithFormat:@"%ldº", (long)temp];
@@ -61,13 +59,17 @@
     
     [self addChildViewController:self.forecastCollectionViewController];
     
-    //collectionViewController.view.frame = CGRectMake(0.0f, 100.0f, 320, 300);
-    
     self.forecastCollectionViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
     
     [self.view addSubview:self.forecastCollectionViewController.view];
     [self.forecastCollectionViewController didMoveToParentViewController:self];
     
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    
+    [[MMOpenWeatherMapManager sharedManager] fetchFiveDayForecastForCityWithID:self.city.cityID completionHandler:nil];
 }
 
 - (void)didReceiveMemoryWarning {

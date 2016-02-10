@@ -43,11 +43,13 @@ static NSString *const appid = @"36eea9dcce34a3ec067b176eda6c1987";
     NSArray *cities = [[MMCityManager defaultManager] allCities];
     
     [self fetchWeatherForecaseForCities:cities completionHandler:^(NSArray *citiesData) {
-        for (NSDictionary *cityData in citiesData) {
-            [[MMCityManager defaultManager] cityWithID:cityData[@"id"] updateForecast:cityData];
+        for (int index = 0; index < citiesData.count; index++) {
+            NSDictionary *cityData = citiesData[index];
+            
+            BOOL saveFlag = (index == (citiesData.count - 1)) ? YES : NO;
+            
+            [[MMCityManager defaultManager] cityWithID:cityData[@"id"] updateForecast:cityData save:saveFlag];
         }
-        
-        [[MMCityManager defaultManager] saveChanges];
         
         dispatch_async(dispatch_get_main_queue(), ^{
             if (block != nil) {

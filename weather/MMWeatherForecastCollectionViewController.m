@@ -22,13 +22,13 @@
 
 static NSString * const reuseIdentifier = @"ForecastCell";
 
-- (NSArray *)fiveDayForecast {
-    if (!_fiveDayForecast) {
-        _fiveDayForecast = [[MMCityManager defaultManager] fiveDayForecastForCity:self.city];
-    }
-    
-    return _fiveDayForecast;
-}
+//- (NSArray *)fiveDayForecast {
+//    if (!_fiveDayForecast) {
+//        _fiveDayForecast = [[MMCityManager defaultManager] fiveDayForecastForCity:self.city];
+//    }
+//    
+//    return _fiveDayForecast;
+//}
 
 #pragma mark - Life Cycle
 
@@ -37,6 +37,8 @@ static NSString * const reuseIdentifier = @"ForecastCell";
     
     // Uncomment the following line to preserve selection between presentations
     // self.clearsSelectionOnViewWillAppear = NO;
+    
+    [self addObserver:self forKeyPath:@"self.city.fiveDayForcast" options:NSKeyValueObservingOptionNew context:nil];
     
     // Register cell classes
     [self.collectionView registerNib:[UINib nibWithNibName:@"MMForecastCollectionViewCell" bundle:nil] forCellWithReuseIdentifier:reuseIdentifier];
@@ -52,9 +54,20 @@ static NSString * const reuseIdentifier = @"ForecastCell";
     self.collectionView.collectionViewLayout = flowLayout;
 }
 
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    
+    [self removeObserver:self forKeyPath:@"self.city.fiveDayForcast"];
+}
+
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSString *,id> *)change context:(void *)context {
+    self.fiveDayForecast = [[MMCityManager defaultManager] fiveDayForecastForCity:self.city];
+    [self.collectionView reloadData];
 }
 
 /*
@@ -88,8 +101,11 @@ static NSString * const reuseIdentifier = @"ForecastCell";
     
     NSLog(@"%@", weather.dataTimeText);
     
-    cell.dateLabel.text = @"Today";
-    cell.tempLabel.text = weather.temp.stringValue;
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    formatter.dateFormat = @"MM/DD";
+    
+    cell.dateLabel.text = [formatter stringFromDate:weather.dataTimeText];
+    cell.tempLabel.text = [NSString stringWithFormat:@"%ldº", weather.temp.integerValue];
     [cell.imageView setImageWithURLString:[[MMCityManager defaultManager] iconURLStringForWeather:weather] placeholder:nil];;
     
     return cell;

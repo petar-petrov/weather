@@ -41,13 +41,7 @@
     return manager;
 }
 
-#pragma mark - Public
-
-- (void)saveChanges {
-    __autoreleasing NSError *error = nil;
-    
-    [self.privateContext save:&error];
-}
+#pragma mark - Add/Delete City
 
 - (void)addCityWithInfo:(NSDictionary *)info {
     // check if city already in the data store
@@ -67,90 +61,6 @@
         
         [self.dataStore saveContext];
     }
-}
-
-
-- (void)cityWithName:(NSString *)name updateForecast:(NSDictionary *)forecastInfo {
-    NSManagedObjectContext *privateContext = [self.dataStore privateContext];
-    
-    City *city = [self cityWithName:name inContext:privateContext];
-    
-    Weather *updatedWeather = [self weatherForCityWithInfo:forecastInfo inManagedObjectContext:privateContext];
-    
-    city.currentWeather = updatedWeather;
-    
-    __autoreleasing NSError *error = nil;
-    
-    [privateContext save:&error];
-}
-
-- (void)cityWithID:(NSNumber *)cityID updateForecast:(NSDictionary *)forecastInfo {
-    City *city = [self cityWithID:cityID inContext:self.privateContext];
-    
-    Weather *updatedWeather = [self weatherForCityWithInfo:forecastInfo inManagedObjectContext:self.privateContext];
-    
-    city.currentWeather = updatedWeather;
-}
-
-
-- (void)cityWithID:(NSNumber *)cityID updateFiveDayForecast:(NSArray *)forecastInfo {
-    City *city = [self cityWithID:cityID inContext:self.privateContext];
-    
-    [city removeFiveDayForcast:city.fiveDayForcast];
-    
-    @autoreleasepool {
-        for (NSDictionary *forecast in forecastInfo) {
-            Weather *weather = [self weatherForCityWithInfo:forecast inManagedObjectContext:self.privateContext];
-            
-            [city addFiveDayForcastObject:weather];
-        }
-    }
-    
-    [self saveChanges];
-    
-}
-
-#warning - error not handled
-- (NSArray <Weather *> *)fiveDayForecastForCity:(City *)city {
-    City *mainContextCity = [self.dataStore.mainContext existingObjectWithID:city.objectID error:nil];
-    
-    NSArray *fiveDayForecast = [mainContextCity.fiveDayForcast allObjects];
-    
-    fiveDayForecast = [fiveDayForecast sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"dataTimeText" ascending:YES]]];
-    
-    return fiveDayForecast;
-}
-
-- (NSArray <City *> *)allCities {
-    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-    NSEntityDescription *entity = [NSEntityDescription entityForName:NSStringFromClass([City class]) inManagedObjectContext:self.dataStore.mainContext];
-    
-    fetchRequest.entity = entity;
-    
-    NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"name" ascending:YES];
-    fetchRequest.sortDescriptors = @[sortDescriptor];
-    
-    NSArray *fetchedObjects = [self.dataStore.mainContext executeFetchRequest:fetchRequest error:nil];
-    
-    return fetchedObjects;
-}
-
-- (City *)cityWithName:(NSString *)name {
-    City *city = [self cityWithName:name inContext:self.dataStore.mainContext];
-    
-    return city;
-}
-
-- (City *)cityWithID:(NSNumber *)cityID {
-    City *city = [self cityWithID:cityID inContext:self.dataStore.mainContext];
-    
-    return city;
-}
-
-- (BOOL)deleteCityWithName:(NSString *)name error:(NSError **)error {
-    City *city = [self cityWithName:name];
-    
-    return [self deleteCity:city error:error];
 }
 
 - (BOOL)deleteCity:(City *)city error:(NSError **)error {
@@ -175,6 +85,96 @@
     
     return [self deleteCity:city error:error];
 }
+
+#pragma mark - City's Weather Forecast
+
+- (void)cityWithID:(NSNumber *)cityID updateForecast:(NSDictionary *)forecastInfo save:(BOOL)flag {
+    __weak MMCityManager *weakSelf = self;
+    
+    [self.privateContext performBlock:^{
+        __strong MMCityManager *strongSelf = weakSelf;
+        
+        City *city = [strongSelf cityWithID:cityID inContext:strongSelf.privateContext];
+        
+        Weather *updatedWeather = [strongSelf weatherForCityWithInfo:forecastInfo inManagedObjectContext:strongSelf.privateContext];
+        
+        city.currentWeather = updatedWeather;
+        
+        if (flag) {
+            __autoreleasing NSError *error = nil;
+            
+            if(![strongSelf.privateContext save:&error] && error != nil) {
+                NSLog(@"%@", error);
+                abort();
+            }
+        }
+    }];
+    
+    
+}
+
+
+- (void)cityWithID:(NSNumber *)cityID updateFiveDayForecast:(NSArray *)forecastInfo {
+    __weak MMCityManager *weakSelf = self;
+    
+    [self.privateContext performBlock:^{
+        __strong MMCityManager *strongSelf = weakSelf;
+        
+        City *city = [strongSelf cityWithID:cityID inContext:strongSelf.privateContext];
+        
+        [city removeFiveDayForcast:city.fiveDayForcast];
+        
+        @autoreleasepool {
+            for (NSDictionary *forecast in forecastInfo) {
+                Weather *weather = [strongSelf weatherForCityWithInfo:forecast inManagedObjectContext:strongSelf.privateContext];
+                
+                [city addFiveDayForcastObject:weather];
+            }
+        }
+        
+        __autoreleasing NSError *error = nil;
+        
+        if(![strongSelf.privateContext save:&error] && error != nil) {
+            NSLog(@"%@", error);
+            abort();
+        }
+    }];
+}
+
+#warning - error not handled
+- (NSArray <Weather *> *)fiveDayForecastForCity:(City *)city {
+    City *mainContextCity = [self.dataStore.mainContext existingObjectWithID:city.objectID error:nil];
+    
+    NSArray *fiveDayForecast = [mainContextCity.fiveDayForcast allObjects];
+    
+    fiveDayForecast = [fiveDayForecast sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"dataTimeText" ascending:YES]]];
+    
+    return fiveDayForecast;
+}
+
+#pragma mark - Retrieve City/s
+
+- (NSArray <City *> *)allCities {
+    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *entity = [NSEntityDescription entityForName:NSStringFromClass([City class]) inManagedObjectContext:self.dataStore.mainContext];
+    
+    fetchRequest.entity = entity;
+    
+    NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"name" ascending:YES];
+    fetchRequest.sortDescriptors = @[sortDescriptor];
+    
+    NSArray *fetchedObjects = [self.dataStore.mainContext executeFetchRequest:fetchRequest error:nil];
+    
+    return fetchedObjects;
+}
+
+- (City *)cityWithID:(NSNumber *)cityID {
+    City *city = [self cityWithID:cityID inContext:self.dataStore.mainContext];
+    
+    return city;
+}
+
+#pragma mark - Utility
 
 static NSString *const iconURLStringBase = @"http://openweathermap.org/img/w/";
 
@@ -289,8 +289,6 @@ static NSString *const iconURLStringBase = @"http://openweathermap.org/img/w/";
             currentWeather.dataTimeText = [self dateFromString:info[@"dt_txt"]];
             
             return currentWeather;
-            
-            break;
         }
     }
     
