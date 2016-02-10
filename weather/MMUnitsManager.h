@@ -8,14 +8,19 @@
 
 #import <Foundation/Foundation.h>
 
-extern NSString *const kUnitsMetric;
-extern NSString *const kUnitsImperial;
+//extern NSString *const kUnitsMetric;
+//extern NSString *const kUnitsImperial;
+
+typedef NS_ENUM(NSInteger, MMUnits) {
+    MMUnitsMetric,
+    MMUnitsImperial
+};
 
 @interface MMUnitsManager : NSObject
 
 + (instancetype)sharedManager;
 
-- (void)setUnits:(NSString *)units;
+- (void)setUnits:(MMUnits)units;
 
 @property (nonatomic, readonly) NSString *currentUnit;
 

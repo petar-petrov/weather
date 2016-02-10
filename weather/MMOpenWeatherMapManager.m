@@ -9,6 +9,7 @@
 #import "MMOpenWeatherMapManager.h"
 
 #import "MMCityManager.h"
+#import "MMUnitsManager.h"
 
 @import UIKit;
 
@@ -41,27 +42,22 @@ static NSString *const appid = @"36eea9dcce34a3ec067b176eda6c1987";
         
     NSArray *cities = [[MMCityManager defaultManager] allCities];
     
-    for (City *city in cities) {
-        [self fetchWeatherForecaseForCity:city.name completionHandler:^(NSDictionary *weatherInfo){
-            
-            if (weatherInfo != nil) {
-                
-                [[MMCityManager defaultManager] cityWithName:city.name updateForecast:weatherInfo];
-            }
-            
-        }];
-    }
-    
-    dispatch_async(dispatch_get_main_queue(), ^{
-        if (block != nil) {
-            block();
+    [self fetchWeatherForecaseForCities:cities completionHandler:^(NSArray *citiesData) {
+        for (NSDictionary *cityData in citiesData) {
+            [[MMCityManager defaultManager] cityWithID:cityData[@"id"] updateForecast:cityData];
         }
-    });
-    
+        
+        [[MMCityManager defaultManager] saveChanges];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (block != nil) {
+                block();
+            }
+        });
+    }];
 }
 
-- (void)fetchWeatherForecaseForCity:(NSString *)name  completionHandler:(void (^) (NSDictionary *))handler {
-    
+- (void)fetchFiveDayForecastForCityWithID:(NSNumber *)cityID completionHandler:(void (^)(void))handler {
     NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
     [configuration setHTTPAdditionalHeaders:@{@"Accept": @"applcatoin/json"}];
     
@@ -69,9 +65,11 @@ static NSString *const appid = @"36eea9dcce34a3ec067b176eda6c1987";
                                                           delegate:nil
                                                      delegateQueue:nil];
     
-    NSString *unit = [[NSUserDefaults standardUserDefaults] objectForKey:@"MMWeatherUnit"];
+    NSString *unit = [MMUnitsManager sharedManager].currentUnit;
     
-    NSURL *url = [self constructURLWithPath:@"/data/2.5/weather" queryDictionary:@{@"q" : name, @"appid" : appid, @"units" : unit}];
+    NSString *idsString = cityID.stringValue;
+    
+    NSURL *url = [self constructURLWithPath:@"/data/2.5/forecast" queryDictionary:@{@"id" : idsString, @"appid" : appid, @"units" : unit}];
     
     [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
     
@@ -83,13 +81,65 @@ static NSString *const appid = @"36eea9dcce34a3ec067b176eda6c1987";
                                                 
                                                 id result = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
                                                 
+                                                NSArray *forecast = result[@"list"];
+                                                
+                                                dispatch_async(dispatch_get_main_queue(), ^{
+                                                    [[MMCityManager defaultManager] cityWithID:cityID updateFiveDayForecast:forecast];
+                                                    
+                                                    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+                                                    
+                                                    if (handler != nil) {
+                                                        handler();
+                                                    }
+                                                    
+                                                });
+                                                
+                                            }];
+    [dataTask resume];
+}
+
+- (void)fetchWeatherForecaseForCities:(NSArray <City *> *)cities  completionHandler:(void (^) (NSArray *))handler {
+    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+    [configuration setHTTPAdditionalHeaders:@{@"Accept": @"applcatoin/json"}];
+    
+    NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration
+                                                          delegate:nil
+                                                     delegateQueue:nil];
+    
+    NSString *unit = [MMUnitsManager sharedManager].currentUnit;
+    
+    NSString *idsString = @"";
+    
+    for (int index = 0; index < cities.count; index++) {
+        
+        City *city = (City *)cities[index];
+        
+        idsString = [idsString stringByAppendingString:city.cityID.stringValue];
+        
+        if (index != cities.count) {
+            idsString = [idsString stringByAppendingString:@","];
+        }
+    }
+    
+    NSURL *url = [self constructURLWithPath:@"/data/2.5/group" queryDictionary:@{@"id" : idsString, @"appid" : appid, @"units" : unit}];
+    
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+    
+    NSURLSessionDataTask *dataTask = [session dataTaskWithURL:url
+                                            completionHandler:^(NSData *data, NSURLResponse *response, NSError *error){
+                                                if (error != nil) {
+                                                    return;
+                                                }
+                                                
+                                                id result = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+                                                
+                                                NSArray *cities = result[@"list"];
+                                                
                                                 dispatch_async(dispatch_get_main_queue(), ^{
                                                     if (handler != nil) {
-                                                        handler(result);
+                                                        handler(cities);
                                                         
                                                         [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-                                                        
-//                                                        NSLog(@"City Updated");
                                                     }
                                                 });
                                                 
@@ -105,7 +155,7 @@ static NSString *const appid = @"36eea9dcce34a3ec067b176eda6c1987";
     
     NSString *persentEncodedString = [text stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]];
     
-    NSString *unit = [[NSUserDefaults standardUserDefaults] stringForKey:@"MMWeatherUnit"];
+    NSString *unit = [MMUnitsManager sharedManager].currentUnit;
     
     NSURL *url = [self constructURLWithPath:@"/data/2.5/find" queryDictionary:@{@"q" : persentEncodedString, @"appid" : appid, @"units" : unit, @"type" : @"like"}];
     

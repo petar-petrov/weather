@@ -7,14 +7,28 @@
 //
 
 #import "MMWeatherForecastCollectionViewController.h"
+#import "MMForecastCollectionViewCell.h"
+#import "MMCollectionViewFlowLayout.h"
+
+#import "UIImageView+Networking.h"
 
 @interface MMWeatherForecastCollectionViewController ()
+
+@property (strong, nonatomic)NSArray *fiveDayForecast;
 
 @end
 
 @implementation MMWeatherForecastCollectionViewController
 
-static NSString * const reuseIdentifier = @"forecastCell";
+static NSString * const reuseIdentifier = @"ForecastCell";
+
+- (NSArray *)fiveDayForecast {
+    if (!_fiveDayForecast) {
+        _fiveDayForecast = [[MMCityManager defaultManager] fiveDayForecastForCity:self.city];
+    }
+    
+    return _fiveDayForecast;
+}
 
 #pragma mark - Life Cycle
 
@@ -25,9 +39,17 @@ static NSString * const reuseIdentifier = @"forecastCell";
     // self.clearsSelectionOnViewWillAppear = NO;
     
     // Register cell classes
-    [self.collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:reuseIdentifier];
+    [self.collectionView registerNib:[UINib nibWithNibName:@"MMForecastCollectionViewCell" bundle:nil] forCellWithReuseIdentifier:reuseIdentifier];
     
     // Do any additional setup after loading the view.
+    
+    MMCollectionViewFlowLayout *flowLayout = [[MMCollectionViewFlowLayout alloc] init];
+    flowLayout.minimumInteritemSpacing = 10.0f;
+    flowLayout.minimumLineSpacing = 0.0f;
+    flowLayout.sectionInset = UIEdgeInsetsMake(0.0f, 0.0f, 0.0f, 0.0f);
+    flowLayout.itemSize = CGSizeMake(80.0f, 200.0f);
+    
+    self.collectionView.collectionViewLayout = flowLayout;
 }
 
 - (void)didReceiveMemoryWarning {
@@ -53,16 +75,22 @@ static NSString * const reuseIdentifier = @"forecastCell";
 
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    return 5;
+    return self.fiveDayForecast.count;
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     
-    UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:reuseIdentifier forIndexPath:indexPath];
+    MMForecastCollectionViewCell *cell = (MMForecastCollectionViewCell *)[collectionView dequeueReusableCellWithReuseIdentifier:reuseIdentifier forIndexPath:indexPath];
     
-    ((UILabel *)[cell viewWithTag:101]).text = @"Monday";
+    Weather *weather = self.fiveDayForecast[indexPath.row];
     
-    NSLog(@"Cell");
+    //NSLog(@"Cell");
+    
+    NSLog(@"%@", weather.dataTimeText);
+    
+    cell.dateLabel.text = @"Today";
+    cell.tempLabel.text = weather.temp.stringValue;
+    [cell.imageView setImageWithURLString:[[MMCityManager defaultManager] iconURLStringForWeather:weather] placeholder:nil];;
     
     return cell;
 }

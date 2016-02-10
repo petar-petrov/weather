@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="9525" systemVersion="15C50" minimumToolsVersion="Xcode 7.0">
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="9525" systemVersion="15D21" minimumToolsVersion="Xcode 7.0">
     <entity name="City" representedClassName="City" syncable="YES">
         <attribute name="cityID" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="latitude" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
         <attribute name="longitude" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="currentWeather" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Weather" inverseName="city" inverseEntity="Weather" syncable="YES"/>
+        <relationship name="fiveDayForcast" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Weather" inverseName="forecastCity" inverseEntity="Weather" syncable="YES"/>
     </entity>
     <entity name="Weather" representedClassName="Weather" syncable="YES">
         <attribute name="clouds" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
-        <attribute name="dataTimeText" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="dataTimeText" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="humidity" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
         <attribute name="icon" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="isFiveDayForecast" optional="YES" attributeType="Boolean" syncable="YES"/>
@@ -23,9 +24,10 @@
         <attribute name="windDegree" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
         <attribute name="windSpeed" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
         <relationship name="city" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="City" inverseName="currentWeather" inverseEntity="City" syncable="YES"/>
+        <relationship name="forecastCity" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="City" inverseName="fiveDayForcast" inverseEntity="City" syncable="YES"/>
     </entity>
     <elements>
-        <element name="City" positionX="-6669" positionY="-990" width="128" height="118"/>
-        <element name="Weather" positionX="-6338" positionY="-954" width="128" height="268"/>
+        <element name="City" positionX="-6669" positionY="-990" width="128" height="133"/>
+        <element name="Weather" positionX="-6338" positionY="-954" width="128" height="285"/>
     </elements>
 </model>

@@ -1,19 +1,19 @@
 //
-//  Weather.h
+//  City.h
 //  weather
 //
-//  Created by Petar Petrov on 01/02/2016.
+//  Created by Petar Petrov on 10/02/2016.
 //  Copyright © 2016 Petar Petrov. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
 
-@class City;
+@class Weather;
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface Weather : NSManagedObject
+@interface City : NSManagedObject
 
 // Insert code here to declare functionality of your managed object subclass
 
@@ -21,4 +21,4 @@ NS_ASSUME_NONNULL_BEGIN
 
 NS_ASSUME_NONNULL_END
 
-#import "Weather+CoreDataProperties.h"
+#import "City+CoreDataProperties.h"

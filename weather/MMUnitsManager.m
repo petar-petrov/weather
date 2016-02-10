@@ -8,12 +8,11 @@
 
 #import "MMUnitsManager.h"
 
-NSString *const kUnitsMetric = @"metric";
-NSString *const kUnitsImperial = @"imperial";
-
 @implementation MMUnitsManager
 
 static NSString *const kMMWeatherUnit = @"MMweatherUnit";
+static NSString *const kUnitsMetric = @"metric";
+static NSString *const kUnitsImperial = @"imperial";
 
 #pragma mark - Custom Accessors
 
@@ -24,16 +23,16 @@ static NSString *const kMMWeatherUnit = @"MMweatherUnit";
 - (NSString *)speedUnit {
     
     if ([self.currentUnit isEqualToString:kUnitsMetric]) {
-        return @"m/s";
+        return NSLocalizedString(@"m/s", nil) ;
     } else if ([self.currentUnit isEqualToString:kUnitsImperial]) {
-        return @"mph";
+        return NSLocalizedString(@"mph", nil) ;
     }
     
     return nil;
 }
 
 - (NSString *)pressureUnit {
-    return @"hPa";
+    return NSLocalizedString(@"hPa", <#comment#>) ;
 }
 
 - (NSString *)humidityUnit {
@@ -65,13 +64,18 @@ static NSString *const kMMWeatherUnit = @"MMweatherUnit";
 
 #pragma mark - Public
 
-- (void)setUnits:(NSString *)units {
-    if (units) {
-        [[NSUserDefaults standardUserDefaults] setObject:units forKey:kMMWeatherUnit];
-        
-        [[NSUserDefaults standardUserDefaults] synchronize];
-
+- (void)setUnits:(MMUnits)units {
+    
+    switch (units) {
+        case MMUnitsMetric:
+            [[NSUserDefaults standardUserDefaults] setObject:kUnitsMetric forKey:kMMWeatherUnit];
+            break;
+        case MMUnitsImperial:
+            [[NSUserDefaults standardUserDefaults] setObject:kUnitsImperial forKey:kMMWeatherUnit];
+            break;
     }
+
+    [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 #pragma mark - Private

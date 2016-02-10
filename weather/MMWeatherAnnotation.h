@@ -20,6 +20,8 @@
 @property (copy, nonatomic) NSString *imageName;
 @property (strong, nonatomic) NSNumber *temp;
 
+@property (strong, nonatomic, readonly) City *city;
+
 
 - (instancetype)initWithCity:(City *)city;
 

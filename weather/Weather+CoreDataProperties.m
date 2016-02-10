@@ -2,7 +2,7 @@
 //  Weather+CoreDataProperties.m
 //  weather
 //
-//  Created by Petar Petrov on 01/02/2016.
+//  Created by Petar Petrov on 10/02/2016.
 //  Copyright © 2016 Petar Petrov. All rights reserved.
 //
 //  Choose "Create NSManagedObject Subclass…" from the Core Data editor menu
@@ -28,5 +28,6 @@
 @dynamic windDegree;
 @dynamic windSpeed;
 @dynamic city;
+@dynamic forecastCity;
 
 @end

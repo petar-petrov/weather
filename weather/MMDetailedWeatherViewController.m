@@ -10,6 +10,7 @@
 
 #import "MMCityManager.h"
 #import "MMUnitsManager.h"
+#import "MMOpenWeatherMapManager.h"
 
 #import "UIImageView+Networking.h"
 #import "MMWeatherForecastCollectionViewController.h"
@@ -21,6 +22,8 @@
 @property (weak, nonatomic) IBOutlet UILabel *windLabel;
 @property (weak, nonatomic) IBOutlet UILabel *humidityLabel;
 @property (weak, nonatomic) IBOutlet UILabel *pressureLabel;
+
+@property (strong, nonatomic) MMWeatherForecastCollectionViewController *forecastCollectionViewController;
 
 
 @end
@@ -35,11 +38,15 @@
     
     Weather *currentWeather = (Weather *)self.city.currentWeather;
     
+    [[MMOpenWeatherMapManager sharedManager] fetchFiveDayForecastForCityWithID:self.city.cityID completionHandler:^{
+        [self.forecastCollectionViewController.collectionView reloadData];
+    }];
+    
     NSInteger temp = currentWeather.temp.integerValue;
     self.temperatureLabel.text = [NSString stringWithFormat:@"%ldº", (long)temp];
     self.descriptionLabel.text = currentWeather.weatherDescription;
     
-    [self.iconImageView setImageWithURLString:[[MMCityManager defaultManager] iconURLStringForCity:self.city] placeholder:nil];
+    [self.iconImageView setImageWithURLString:[[MMCityManager defaultManager] iconURLStringForWeather:self.city.currentWeather] placeholder:nil];
 
     self.windLabel.text = [currentWeather.windSpeed.stringValue stringByAppendingString:[MMUnitsManager sharedManager].speedUnit];
     self.humidityLabel.text = [currentWeather.humidity.stringValue stringByAppendingString:[MMUnitsManager sharedManager].humidityUnit];
@@ -49,20 +56,34 @@
     
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:[NSBundle mainBundle]];
     
-    MMWeatherForecastCollectionViewController *collectionViewController = (MMWeatherForecastCollectionViewController *)[storyboard instantiateViewControllerWithIdentifier:@"WeatherForecastCollectionView"];
+    self.forecastCollectionViewController = (MMWeatherForecastCollectionViewController *)[storyboard instantiateViewControllerWithIdentifier:@"WeatherForecastCollectionView"];
+    self.forecastCollectionViewController.city = self.city;
     
-    [self addChildViewController:collectionViewController];
+    [self addChildViewController:self.forecastCollectionViewController];
     
-    collectionViewController.view.frame = CGRectMake(0.0f, 200.0f, 320, 300);
+    //collectionViewController.view.frame = CGRectMake(0.0f, 100.0f, 320, 300);
     
-    [self.view addSubview:collectionViewController.view];
-    [collectionViewController didMoveToParentViewController:self];
+    self.forecastCollectionViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+    
+    [self.view addSubview:self.forecastCollectionViewController.view];
+    [self.forecastCollectionViewController didMoveToParentViewController:self];
     
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (void)updateViewConstraints {
+    
+    [self.forecastCollectionViewController.view.topAnchor constraintEqualToAnchor:self.descriptionLabel.bottomAnchor constant:10.0f].active = YES;
+    [self.forecastCollectionViewController.view.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor].active = YES;
+    [self.forecastCollectionViewController.view.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor].active = YES;
+    
+    [self.forecastCollectionViewController.view.heightAnchor constraintEqualToConstant:200.0f].active = YES;
+    
+    [super updateViewConstraints];
 }
 
 /*

@@ -7,7 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "MMCityManager.h"
 
 @interface MMWeatherForecastCollectionViewController : UICollectionViewController
+
+@property (strong, nonatomic) City *city;
 
 @end

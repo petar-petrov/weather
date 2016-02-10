@@ -2,7 +2,7 @@
 //  City+CoreDataProperties.h
 //  weather
 //
-//  Created by Petar Petrov on 01/02/2016.
+//  Created by Petar Petrov on 10/02/2016.
 //  Copyright © 2016 Petar Petrov. All rights reserved.
 //
 //  Choose "Create NSManagedObject Subclass…" from the Core Data editor menu
@@ -19,7 +19,17 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nullable, nonatomic, retain) NSNumber *latitude;
 @property (nullable, nonatomic, retain) NSNumber *longitude;
 @property (nullable, nonatomic, retain) NSString *name;
-@property (nullable, nonatomic, retain) NSManagedObject *currentWeather;
+@property (nullable, nonatomic, retain) Weather *currentWeather;
+@property (nullable, nonatomic, retain) NSSet<Weather *> *fiveDayForcast;
+
+@end
+
+@interface City (CoreDataGeneratedAccessors)
+
+- (void)addFiveDayForcastObject:(Weather *)value;
+- (void)removeFiveDayForcastObject:(Weather *)value;
+- (void)addFiveDayForcast:(NSSet<Weather *> *)values;
+- (void)removeFiveDayForcast:(NSSet<Weather *> *)values;
 
 @end
 

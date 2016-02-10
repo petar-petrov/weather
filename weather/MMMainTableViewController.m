@@ -129,9 +129,9 @@ static NSString *const reuseIdentifier = @"WeatherCell";
 - (void)changeUnits:(UISegmentedControl *)sender
 {
     if (sender.selectedSegmentIndex == 0) {
-        [[MMUnitsManager sharedManager] setUnits:kUnitsMetric];
+        [[MMUnitsManager sharedManager] setUnits:MMUnitsMetric];
     } else {
-        [[MMUnitsManager sharedManager] setUnits:kUnitsImperial];
+        [[MMUnitsManager sharedManager] setUnits:MMUnitsImperial];
     }
     
     [self refreshWeatherData];
@@ -241,7 +241,7 @@ static NSString *const reuseIdentifier = @"WeatherCell";
     [unitsSegmentedController setWidth:44.0f forSegmentAtIndex:1];
     [unitsSegmentedController addTarget:self action:@selector(changeUnits:) forControlEvents:UIControlEventValueChanged];
 
-    unitsSegmentedController.selectedSegmentIndex = ([[MMUnitsManager sharedManager].currentUnit isEqualToString:kUnitsMetric]) ? 0 : 1;
+    unitsSegmentedController.selectedSegmentIndex = ([[MMUnitsManager sharedManager].currentUnit isEqualToString:@"metric"]) ? 0 : 1;
     
     UIBarButtonItem *unitsBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:unitsSegmentedController];
     
@@ -260,7 +260,7 @@ static NSString *const reuseIdentifier = @"WeatherCell";
     [MMReachabilityHandler performReachabilityCheckWithReachableBlock:^{
                                                         [self.manager updateAllCitiesWithCompletionHandler:nil];
                                                     }
-                                                   unreachableBlock:^ {
+                                                   unreachableBlock:^{
                                                         [self showAlertView];
                                                    }];
 }
@@ -293,7 +293,7 @@ static NSString *const reuseIdentifier = @"WeatherCell";
     
     cell.temperatureLabel.text = [NSString stringWithFormat:@"%ldº", (long)temp];
     
-    NSString *urlString = [[MMCityManager defaultManager] iconURLStringForCity:city];
+    NSString *urlString = [[MMCityManager defaultManager] iconURLStringForWeather:city.currentWeather];
     
     [cell.iconImageView setImageWithURLString:urlString placeholder:nil];
 }

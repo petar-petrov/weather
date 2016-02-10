@@ -15,7 +15,7 @@
 
 @property (nonatomic, readwrite) CLLocationCoordinate2D coordinate;
 
-@property (strong, nonatomic) City *city;
+@property (strong, nonatomic, readwrite) City *city;
 
 @end
 

@@ -14,7 +14,7 @@
 
 @interface MMWeatherAnnotationView ()
 
-@property (strong, nonatomic, readwrite) City *city;
+//@property (strong, nonatomic, readwrite) City *city;
 
 @property (assign, nonatomic, getter=isConstraintsSet) BOOL constraintsSet;
 
@@ -38,7 +38,7 @@
         
         _cityLabel = [[UILabel alloc] initWithFrame:CGRectZero];
         _cityLabel.text = weatherAnnotation.title;
-        _cityLabel.textColor = [UIColor grayColor];//[[UIColor alloc]initWithRed: 0.219034 green: 0.598590 blue: 0.815217 alpha: 1 ];
+        _cityLabel.textColor = [UIColor grayColor];
         _cityLabel.font = [UIFont boldSystemFontOfSize:13.0f];
         _cityLabel.minimumScaleFactor = 0.5f;
         _cityLabel.numberOfLines = 0;
@@ -52,10 +52,8 @@
         
         MMCityManager *cityManager = [MMCityManager defaultManager];
         
-        City *city = [cityManager cityWithName:weatherAnnotation.title];
-        
         _iconImageView = [[UIImageView alloc] initWithFrame:CGRectZero];
-        [_iconImageView setImageWithURLString:[cityManager iconURLStringForCity:city]
+        [_iconImageView setImageWithURLString:[cityManager iconURLStringForWeather:weatherAnnotation.city.currentWeather]
                                   placeholder:nil];
         
         _iconImageView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -88,7 +86,7 @@
     
     MMCityManager *cityManager = [MMCityManager defaultManager];
     
-    [self.iconImageView setImageWithURLString:[cityManager iconURLStringForCity:[cityManager cityWithName:annotation.title]]
+    [self.iconImageView setImageWithURLString:[cityManager iconURLStringForWeather:annotation.city.currentWeather]
                                   placeholder:[UIImage imageNamed:@"10d.png"]];
 }
 
