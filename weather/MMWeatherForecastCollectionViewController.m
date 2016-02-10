@@ -49,15 +49,13 @@ static NSString * const reuseIdentifier = @"ForecastCell";
     flowLayout.minimumInteritemSpacing = 10.0f;
     flowLayout.minimumLineSpacing = 0.0f;
     flowLayout.sectionInset = UIEdgeInsetsMake(0.0f, 0.0f, 0.0f, 0.0f);
-    flowLayout.itemSize = CGSizeMake(80.0f, 200.0f);
+    flowLayout.itemSize = CGSizeMake(95.0f, 200.0f);
     
     self.collectionView.collectionViewLayout = flowLayout;
 }
 
-- (void)viewWillDisappear:(BOOL)animated {
-    [super viewWillDisappear:animated];
-    
-    [self removeObserver:self forKeyPath:@"self.city.fiveDayForcast"];
+- (void)dealloc {
+        [self removeObserver:self forKeyPath:@"self.city.fiveDayForcast"];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -70,15 +68,6 @@ static NSString * const reuseIdentifier = @"ForecastCell";
     [self.collectionView reloadData];
 }
 
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 #pragma mark <UICollectionViewDataSource>
 
@@ -97,14 +86,14 @@ static NSString * const reuseIdentifier = @"ForecastCell";
     
     Weather *weather = self.fiveDayForecast[indexPath.row];
     
-    //NSLog(@"Cell");
-    
-    NSLog(@"%@", weather.dataTimeText);
-    
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-    formatter.dateFormat = @"MM/DD";
+    formatter.dateFormat = @"EEEE";
+    
+    NSDateFormatter *timeFormatter = [[NSDateFormatter alloc] init];
+    timeFormatter.dateFormat = @"HH:mm";
     
     cell.dateLabel.text = [formatter stringFromDate:weather.dataTimeText];
+    cell.timeLabel.text = [timeFormatter stringFromDate:weather.dataTimeText];
     cell.tempLabel.text = [NSString stringWithFormat:@"%ldº", weather.temp.integerValue];
     [cell.imageView setImageWithURLString:[[MMCityManager defaultManager] iconURLStringForWeather:weather] placeholder:nil];;
     

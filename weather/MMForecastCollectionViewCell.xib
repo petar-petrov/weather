@@ -15,7 +15,7 @@
                 <subviews>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KuJ-0x-0iW">
                         <rect key="frame" x="0.0" y="0.0" width="80" height="21"/>
-                        <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
                         <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                         <nil key="highlightedColor"/>
                     </label>
@@ -32,30 +32,42 @@
                             <constraint firstAttribute="height" constant="50" id="wOh-BW-6cR"/>
                         </constraints>
                     </imageView>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FpR-hd-gAg">
+                        <rect key="frame" x="0.0" y="29" width="80" height="20"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                        <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
                 </subviews>
                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
             </view>
             <constraints>
                 <constraint firstItem="jih-5N-lYV" firstAttribute="centerY" secondItem="Q8F-Et-0J3" secondAttribute="centerY" id="0eY-Up-aSh"/>
                 <constraint firstAttribute="trailing" secondItem="KuJ-0x-0iW" secondAttribute="trailing" id="22u-zt-1fg"/>
+                <constraint firstItem="FpR-hd-gAg" firstAttribute="leading" secondItem="Q8F-Et-0J3" secondAttribute="leading" id="4Tl-YG-6Az"/>
                 <constraint firstItem="KuJ-0x-0iW" firstAttribute="top" secondItem="Q8F-Et-0J3" secondAttribute="top" constant="8" id="53r-qy-eq6"/>
                 <constraint firstItem="KuJ-0x-0iW" firstAttribute="top" secondItem="Q8F-Et-0J3" secondAttribute="top" id="BVo-6Q-fKJ"/>
                 <constraint firstItem="jih-5N-lYV" firstAttribute="centerX" secondItem="Q8F-Et-0J3" secondAttribute="centerX" id="EjU-NH-s2L"/>
+                <constraint firstAttribute="trailing" secondItem="FpR-hd-gAg" secondAttribute="trailing" id="Qnf-VV-jOk"/>
                 <constraint firstAttribute="bottom" secondItem="WOo-hb-mvQ" secondAttribute="bottom" id="Yje-fh-YHB"/>
                 <constraint firstAttribute="trailing" secondItem="WOo-hb-mvQ" secondAttribute="trailing" id="kP6-Qj-AWP"/>
+                <constraint firstItem="FpR-hd-gAg" firstAttribute="top" secondItem="KuJ-0x-0iW" secondAttribute="bottom" constant="8" id="l0g-Ko-Lb5"/>
                 <constraint firstItem="WOo-hb-mvQ" firstAttribute="leading" secondItem="Q8F-Et-0J3" secondAttribute="leading" id="uD8-UD-5kn"/>
                 <constraint firstItem="KuJ-0x-0iW" firstAttribute="leading" secondItem="Q8F-Et-0J3" secondAttribute="leading" id="uzh-hy-w98"/>
+                <constraint firstItem="FpR-hd-gAg" firstAttribute="top" secondItem="KuJ-0x-0iW" secondAttribute="bottom" constant="4" id="xau-HL-Xgs"/>
             </constraints>
             <size key="customSize" width="163" height="349"/>
             <variation key="default">
                 <mask key="constraints">
                     <exclude reference="53r-qy-eq6"/>
+                    <exclude reference="xau-HL-Xgs"/>
                 </mask>
             </variation>
             <connections>
                 <outlet property="dateLabel" destination="KuJ-0x-0iW" id="pDB-YI-REp"/>
                 <outlet property="imageView" destination="jih-5N-lYV" id="uex-U2-AdL"/>
                 <outlet property="tempLabel" destination="WOo-hb-mvQ" id="oYu-bP-8j1"/>
+                <outlet property="timeLabel" destination="FpR-hd-gAg" id="Dq4-Pq-u8b"/>
             </connections>
             <point key="canvasLocation" x="196" y="317"/>
         </collectionViewCell>
