@@ -11,6 +11,8 @@
 #import "MMWeatherTableViewCell.h"
 #import "UIImageView+Networking.h"
 #import "MMDetailedWeatherViewController.h"
+#import "MMForecastDetailsTableViewController.h"
+
 #import "MMMapViewController.h"
 
 #import "MMReachabilityHandler.h"
@@ -140,7 +142,7 @@ static NSString *const reuseIdentifier = @"WeatherCell";
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     if ([segue.identifier isEqualToString:@"DetailedWeather"]) {
-        MMDetailedWeatherViewController *destinationViewController = (MMDetailedWeatherViewController *)segue.destinationViewController;
+        MMForecastDetailsTableViewController *destinationViewController = (MMForecastDetailsTableViewController *)segue.destinationViewController;
         
         destinationViewController.city = [self.fetchedResultController objectAtIndexPath:self.currentlySelectedIndexPath];
     } else if ([segue.identifier isEqualToString:@"ShowMap"]) {

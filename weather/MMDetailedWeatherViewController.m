@@ -14,16 +14,15 @@
 
 #import "UIImageView+Networking.h"
 #import "MMWeatherForecastCollectionViewController.h"
+#import "MMForecastDetailsTableViewController.h"
 
 @interface MMDetailedWeatherViewController ()
 @property (weak, nonatomic) IBOutlet UILabel *temperatureLabel;
 @property (weak, nonatomic) IBOutlet UIImageView *iconImageView;
 @property (weak, nonatomic) IBOutlet UILabel *descriptionLabel;
-@property (weak, nonatomic) IBOutlet UILabel *windLabel;
-@property (weak, nonatomic) IBOutlet UILabel *humidityLabel;
-@property (weak, nonatomic) IBOutlet UILabel *pressureLabel;
 
 @property (strong, nonatomic) MMWeatherForecastCollectionViewController *forecastCollectionViewController;
+@property (strong, nonatomic) MMForecastDetailsTableViewController *forecastDetailsTableViewController;
 
 
 @end
@@ -46,9 +45,9 @@
     
     [self.iconImageView setImageWithURLString:[[MMCityManager defaultManager] iconURLStringForWeather:self.city.currentWeather] placeholder:nil];
 
-    self.windLabel.text = [currentWeather.windSpeed.stringValue stringByAppendingString:[MMUnitsManager sharedManager].speedUnit];
-    self.humidityLabel.text = [currentWeather.humidity.stringValue stringByAppendingString:[MMUnitsManager sharedManager].humidityUnit];
-    self.pressureLabel.text = [currentWeather.pressure.stringValue stringByAppendingString:[MMUnitsManager sharedManager].pressureUnit];
+//    self.windLabel.text = [currentWeather.windSpeed.stringValue stringByAppendingString:[MMUnitsManager sharedManager].speedUnit];
+//    self.humidityLabel.text = [currentWeather.humidity.stringValue stringByAppendingString:[MMUnitsManager sharedManager].humidityUnit];
+//    self.pressureLabel.text = [currentWeather.pressure.stringValue stringByAppendingString:[MMUnitsManager sharedManager].pressureUnit];
     
 //    self.navigationController.toolbarHidden = YES;
     
@@ -63,6 +62,15 @@
     
     [self.view addSubview:self.forecastCollectionViewController.view];
     [self.forecastCollectionViewController didMoveToParentViewController:self];
+    
+//    self.forecastDetailsTableViewController = [storyboard instantiateViewControllerWithIdentifier:@"ForecastDetailsView"];
+//    
+//    [self addChildViewController:self.forecastDetailsTableViewController];
+//    
+//    self.forecastDetailsTableViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+//    
+//    [self.view addSubview:self.forecastDetailsTableViewController.view];
+//    [self.forecastDetailsTableViewController didMoveToParentViewController:self];
     
 }
 
@@ -79,13 +87,30 @@
 
 - (void)updateViewConstraints {
     
-    [self.forecastCollectionViewController.view.topAnchor constraintEqualToAnchor:self.descriptionLabel.bottomAnchor constant:10.0f].active = YES;
+    [self.forecastCollectionViewController.view.topAnchor constraintEqualToAnchor:self.descriptionLabel.bottomAnchor constant:30.0f].active = YES;
     [self.forecastCollectionViewController.view.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor].active = YES;
     [self.forecastCollectionViewController.view.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor].active = YES;
     
     [self.forecastCollectionViewController.view.heightAnchor constraintEqualToConstant:200.0f].active = YES;
     
+//    [self.forecastDetailsTableViewController.view.topAnchor constraintEqualToAnchor:self.forecastDetailsTableViewController.view.bottomAnchor constant:10.0f].active = YES;
+//    [self.forecastDetailsTableViewController.view.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor].active = YES;
+//    [self.forecastDetailsTableViewController.view.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor].active = YES;
+//    [self.forecastDetailsTableViewController.view.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor].active = YES;
+    
     [super updateViewConstraints];
+}
+
+- (BOOL)shouldAutorotate {
+    return NO;
+}
+
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations {
+    return UIInterfaceOrientationMaskPortrait;
+}
+
+- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {
+    return UIInterfaceOrientationPortrait;
 }
 
 /*

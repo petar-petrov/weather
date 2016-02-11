@@ -12,6 +12,8 @@
 
 @interface MMOpenWeatherMapManager : NSObject
 
+@property (strong, nonatomic, readonly) NSDate *allCitiesLastUpdatedDate;
+
 + (instancetype)sharedManager;
 
 - (instancetype)init NS_UNAVAILABLE;

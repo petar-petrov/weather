@@ -12,23 +12,21 @@
 
 #import "UIImageView+Networking.h"
 
+@import QuartzCore;
+
 @interface MMWeatherForecastCollectionViewController ()
 
 @property (strong, nonatomic)NSArray *fiveDayForecast;
+
+@property (weak, nonatomic) IBOutlet UIActivityIndicatorView *loadingIndicator;
 
 @end
 
 @implementation MMWeatherForecastCollectionViewController
 
-static NSString * const reuseIdentifier = @"ForecastCell";
+static NSString *const reuseIdentifier = @"ForecastCell";
 
-//- (NSArray *)fiveDayForecast {
-//    if (!_fiveDayForecast) {
-//        _fiveDayForecast = [[MMCityManager defaultManager] fiveDayForecastForCity:self.city];
-//    }
-//    
-//    return _fiveDayForecast;
-//}
+static NSString *const fiveDayForecastKeyPath = @"self.city.fiveDayForcast";
 
 #pragma mark - Life Cycle
 
@@ -38,24 +36,32 @@ static NSString * const reuseIdentifier = @"ForecastCell";
     // Uncomment the following line to preserve selection between presentations
     // self.clearsSelectionOnViewWillAppear = NO;
     
-    [self addObserver:self forKeyPath:@"self.city.fiveDayForcast" options:NSKeyValueObservingOptionNew context:nil];
+    [self addObserver:self forKeyPath:fiveDayForecastKeyPath options:NSKeyValueObservingOptionNew context:nil];
     
     // Register cell classes
     [self.collectionView registerNib:[UINib nibWithNibName:@"MMForecastCollectionViewCell" bundle:nil] forCellWithReuseIdentifier:reuseIdentifier];
     
     // Do any additional setup after loading the view.
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
+    NSLog(@"%@", NSStringFromCGRect(self.collectionView.bounds));
     
     MMCollectionViewFlowLayout *flowLayout = [[MMCollectionViewFlowLayout alloc] init];
     flowLayout.minimumInteritemSpacing = 10.0f;
     flowLayout.minimumLineSpacing = 0.0f;
     flowLayout.sectionInset = UIEdgeInsetsMake(0.0f, 0.0f, 0.0f, 0.0f);
-    flowLayout.itemSize = CGSizeMake(95.0f, 200.0f);
+    flowLayout.itemSize = CGSizeMake(95.0f, self.collectionView.bounds.size.height - 10.0f);
     
     self.collectionView.collectionViewLayout = flowLayout;
+    
+    [self.loadingIndicator startAnimating];
 }
 
 - (void)dealloc {
-        [self removeObserver:self forKeyPath:@"self.city.fiveDayForcast"];
+        [self removeObserver:self forKeyPath:fiveDayForecastKeyPath];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -64,8 +70,18 @@ static NSString * const reuseIdentifier = @"ForecastCell";
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSString *,id> *)change context:(void *)context {
-    self.fiveDayForecast = [[MMCityManager defaultManager] fiveDayForecastForCity:self.city];
-    [self.collectionView reloadData];
+    
+    if ([keyPath isEqualToString:fiveDayForecastKeyPath]) {
+        [self.loadingIndicator stopAnimating];
+        self.loadingIndicator.hidden = YES;
+        self.fiveDayForecast = [[MMCityManager defaultManager] fiveDayForecastForCity:self.city];
+        [self.collectionView reloadData];
+    }
+    
+}
+
+- (void)stopLoadingIndicator {
+    [self.loadingIndicator stopAnimating];
 }
 
 

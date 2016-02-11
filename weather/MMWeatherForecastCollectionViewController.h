@@ -13,4 +13,6 @@
 
 @property (strong, nonatomic) City *city;
 
+- (void)stopLoadingIndicator;
+
 @end

@@ -20,10 +20,7 @@
     self = [super init];
     
     if (self) {
-//        self.itemSize = CGSizeMake(100.0f, self.collectionView.bounds.size.height);
-//        self.sectionInset = UIEdgeInsetsMake(0.0f, 0.0f, 0.0f, 0.0f);
-//        self.minimumInteritemSpacing = 10.0f;
-//        self.minimumLineSpacing = 0.0f;
+        
     }
     
     return self;

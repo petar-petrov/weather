@@ -272,6 +272,8 @@ static NSString *const iconURLStringBase = @"http://openweathermap.org/img/w/";
     currentWeather.temp = info[@"main"][@"temp"];
     currentWeather.pressure = info[@"main"][@"pressure"];
     currentWeather.humidity = info[@"main"][@"humidity"];
+    currentWeather.sunset = info[@"sys"][@"sunset"];
+    currentWeather.sunrise = info[@"sys"][@"sunrise"];
     
     // fix this
     currentWeather.weatherDescription = info[@"weather"][0][@"description"];

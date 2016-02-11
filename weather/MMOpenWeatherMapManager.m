@@ -16,10 +16,32 @@
 @interface MMOpenWeatherMapManager () <NSURLSessionDelegate>
 
 @property (strong, nonatomic) NSURLSessionDataTask *dataTask;
+@property (strong, nonatomic, readwrite) NSDate *allCitiesLastUpdatedDate;
 
 @end
 
 @implementation MMOpenWeatherMapManager
+
+@synthesize allCitiesLastUpdatedDate = _allCitiesLastUpdatedDate;
+
+#pragma mark - Custom Accessors
+
+- (NSDate *)allCitiesLastUpdatedDate {
+    
+    if (!_allCitiesLastUpdatedDate) {
+        // get the last updated date from user defaults
+    }
+    
+    return _allCitiesLastUpdatedDate;
+}
+
+- (void) setAllCitiesLastUpdatedDate:(NSDate *)allCitiesLastUpdatedDate {
+    if (![_allCitiesLastUpdatedDate isEqualToDate:allCitiesLastUpdatedDate]) {
+        _allCitiesLastUpdatedDate = allCitiesLastUpdatedDate;
+        
+        // set the last updated date to user defaults
+    }
+}
 
 #pragma mark - Initilizers
 
@@ -52,6 +74,8 @@ static NSString *const appid = @"36eea9dcce34a3ec067b176eda6c1987";
         }
         
         dispatch_async(dispatch_get_main_queue(), ^{
+            self.allCitiesLastUpdatedDate = [NSDate date];
+            
             if (block != nil) {
                 block();
             }
@@ -118,7 +142,7 @@ static NSString *const appid = @"36eea9dcce34a3ec067b176eda6c1987";
         
         idsString = [idsString stringByAppendingString:city.cityID.stringValue];
         
-        if (index != cities.count) {
+        if (index != (cities.count - 1)) {
             idsString = [idsString stringByAppendingString:@","];
         }
     }
