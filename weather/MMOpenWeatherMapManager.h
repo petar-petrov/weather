@@ -24,6 +24,6 @@
 
 - (void)searchForCityWithText:(NSString *)text completionHandler:(void(^)(NSArray *))handler;
 
-- (void)fetchFiveDayForecastForCityWithID:(NSNumber *)cityID completionHandler:(void(^)(void))handler;
+- (void)fetchFiveDayForecastForCityWithID:(NSNumber *)cityID completionHandler:(void(^)(NSError *error))handler;
 
 @end

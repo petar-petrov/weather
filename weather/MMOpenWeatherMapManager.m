@@ -10,6 +10,7 @@
 
 #import "MMCityManager.h"
 #import "MMUnitsManager.h"
+#import "MMURLRequestHandler.h"
 
 @import UIKit;
 
@@ -17,6 +18,7 @@
 
 @property (strong, nonatomic) NSURLSessionDataTask *dataTask;
 @property (strong, nonatomic, readwrite) NSDate *allCitiesLastUpdatedDate;
+@property (nonatomic, readonly) NSString *unit;
 
 @end
 
@@ -25,6 +27,10 @@
 @synthesize allCitiesLastUpdatedDate = _allCitiesLastUpdatedDate;
 
 #pragma mark - Custom Accessors
+
+- (NSString *)unit {
+    return [MMUnitsManager sharedManager].currentUnit;
+}
 
 - (NSDate *)allCitiesLastUpdatedDate {
     
@@ -83,57 +89,39 @@ static NSString *const appid = @"36eea9dcce34a3ec067b176eda6c1987";
     }];
 }
 
-- (void)fetchFiveDayForecastForCityWithID:(NSNumber *)cityID completionHandler:(void (^)(void))handler {
-    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
-    [configuration setHTTPAdditionalHeaders:@{@"Accept": @"applcatoin/json"}];
-    
-    NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration
-                                                          delegate:nil
-                                                     delegateQueue:nil];
-    
-    NSString *unit = [MMUnitsManager sharedManager].currentUnit;
+- (void)fetchFiveDayForecastForCityWithID:(NSNumber *)cityID completionHandler:(void (^)(NSError *error))handler {
     
     NSString *idsString = cityID.stringValue;
     
-    NSURL *url = [self constructURLWithPath:@"/data/2.5/forecast" queryDictionary:@{@"id" : idsString, @"appid" : appid, @"units" : unit}];
+    NSURL *url = [self constructURLWithPath:@"/data/2.5/forecast" queryDictionary:@{@"id" : idsString, @"appid" : appid, @"units" : self.unit}];
     
     [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
     
-    NSURLSessionDataTask *dataTask = [session dataTaskWithURL:url
-                                            completionHandler:^(NSData *data, NSURLResponse *response, NSError *error){
-                                                if (error != nil) {
-                                                    return;
-                                                }
-                                                
-                                                id result = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-                                                
-                                                NSArray *forecast = result[@"list"];
-                                                
-                                                dispatch_async(dispatch_get_main_queue(), ^{
-                                                    [[MMCityManager defaultManager] cityWithID:cityID updateFiveDayForecast:forecast];
-                                                    
-                                                    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-                                                    
-                                                    if (handler != nil) {
-                                                        handler();
-                                                    }
-                                                    
-                                                });
-                                                
-                                            }];
-    [dataTask resume];
+    [MMURLRequestHandler dataRequestWithURL:url
+                               successBlock:^(id data) {
+                                   NSArray *forecast = data[@"list"];
+                                   
+                                   dispatch_async(dispatch_get_main_queue(), ^{
+                                       [[MMCityManager defaultManager] cityWithID:cityID updateFiveDayForecast:forecast];
+
+                                       [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+
+                                       if (handler != nil) {
+                                           handler(nil);
+                                       }
+                                       
+                                   });
+                               }
+                                  failBlock:^(NSError *error) {
+                                      if (handler != nil) {
+                                          handler(error);
+                                      }
+                                      
+                                  }];
 }
 
 - (void)fetchWeatherForecaseForCities:(NSArray <City *> *)cities  completionHandler:(void (^) (NSArray *))handler {
-    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
-    [configuration setHTTPAdditionalHeaders:@{@"Accept": @"applcatoin/json"}];
-    
-    NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration
-                                                          delegate:nil
-                                                     delegateQueue:nil];
-    
-    NSString *unit = [MMUnitsManager sharedManager].currentUnit;
-    
+ 
     NSString *idsString = @"";
     
     for (int index = 0; index < cities.count; index++) {
@@ -147,30 +135,23 @@ static NSString *const appid = @"36eea9dcce34a3ec067b176eda6c1987";
         }
     }
     
-    NSURL *url = [self constructURLWithPath:@"/data/2.5/group" queryDictionary:@{@"id" : idsString, @"appid" : appid, @"units" : unit}];
+    NSURL *url = [self constructURLWithPath:@"/data/2.5/group" queryDictionary:@{@"id" : idsString, @"appid" : appid, @"units" : self.unit}];
     
     [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
     
-    NSURLSessionDataTask *dataTask = [session dataTaskWithURL:url
-                                            completionHandler:^(NSData *data, NSURLResponse *response, NSError *error){
-                                                if (error != nil) {
-                                                    return;
-                                                }
-                                                
-                                                id result = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-                                                
-                                                NSArray *cities = result[@"list"];
-                                                
-                                                dispatch_async(dispatch_get_main_queue(), ^{
-                                                    if (handler != nil) {
-                                                        handler(cities);
-                                                        
-                                                        [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-                                                    }
-                                                });
-                                                
-                                            }];
-    [dataTask resume];
+    [MMURLRequestHandler dataRequestWithURL:url
+                               successBlock:^(id data){
+                                   NSArray *cities = data[@"list"];
+
+                                   dispatch_async(dispatch_get_main_queue(), ^{
+                                       if (handler != nil) {
+                                           handler(cities);
+
+                                           [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+                                       }
+                                   });
+                               }
+                                  failBlock:nil];
 }
 
 - (void)searchForCityWithText:(NSString *)text completionHandler:(void(^)(NSArray *))handler {
@@ -181,9 +162,7 @@ static NSString *const appid = @"36eea9dcce34a3ec067b176eda6c1987";
     
     NSString *persentEncodedString = [text stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]];
     
-    NSString *unit = [MMUnitsManager sharedManager].currentUnit;
-    
-    NSURL *url = [self constructURLWithPath:@"/data/2.5/find" queryDictionary:@{@"q" : persentEncodedString, @"appid" : appid, @"units" : unit, @"type" : @"like"}];
+    NSURL *url = [self constructURLWithPath:@"/data/2.5/find" queryDictionary:@{@"q" : persentEncodedString, @"appid" : appid, @"units" : self.unit, @"type" : @"like"}];
     
     if (self.dataTask) {
         [self.dataTask cancel];

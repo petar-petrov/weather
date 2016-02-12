@@ -91,7 +91,7 @@
 - (void)cityWithID:(NSNumber *)cityID updateForecast:(NSDictionary *)forecastInfo save:(BOOL)flag {
     __weak MMCityManager *weakSelf = self;
     
-    [self.privateContext performBlock:^{
+    [self.privateContext performBlockAndWait:^{
         __strong MMCityManager *strongSelf = weakSelf;
         
         City *city = [strongSelf cityWithID:cityID inContext:strongSelf.privateContext];
@@ -117,7 +117,7 @@
 - (void)cityWithID:(NSNumber *)cityID updateFiveDayForecast:(NSArray *)forecastInfo {
     __weak MMCityManager *weakSelf = self;
     
-    [self.privateContext performBlock:^{
+    [self.privateContext performBlockAndWait:^{
         __strong MMCityManager *strongSelf = weakSelf;
         
         City *city = [strongSelf cityWithID:cityID inContext:strongSelf.privateContext];
@@ -194,7 +194,7 @@ static NSString *const iconURLStringBase = @"http://openweathermap.org/img/w/";
 
 - (NSDate *)dateFromString:(NSString *)dateString {
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    dateFormatter.dateFormat = @"YYYY-MM-DD HH:mm:ss";
+    dateFormatter.dateFormat = @"YYYY-MM-dd HH:mm:ss";
     
     return [dateFormatter dateFromString:dateString];
 }

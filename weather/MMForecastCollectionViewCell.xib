@@ -19,14 +19,8 @@
                         <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WOo-hb-mvQ">
-                        <rect key="frame" x="0.0" y="176" width="80" height="24"/>
-                        <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
-                        <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                        <nil key="highlightedColor"/>
-                    </label>
                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="jih-5N-lYV">
-                        <rect key="frame" x="15" y="75" width="50" height="50"/>
+                        <rect key="frame" x="15" y="54" width="50" height="50"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="50" id="Dfn-hF-gxt"/>
                             <constraint firstAttribute="height" constant="50" id="wOh-BW-6cR"/>
@@ -38,21 +32,37 @@
                         <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                         <nil key="highlightedColor"/>
                     </label>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="UXV-fM-YBo" customClass="MMWindView">
+                        <rect key="frame" x="0.0" y="133" width="80" height="67"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    </view>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WOo-hb-mvQ">
+                        <rect key="frame" x="0.0" y="104" width="80" height="24"/>
+                        <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
+                        <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
                 </subviews>
                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
             </view>
             <constraints>
-                <constraint firstItem="jih-5N-lYV" firstAttribute="centerY" secondItem="Q8F-Et-0J3" secondAttribute="centerY" id="0eY-Up-aSh"/>
                 <constraint firstAttribute="trailing" secondItem="KuJ-0x-0iW" secondAttribute="trailing" id="22u-zt-1fg"/>
                 <constraint firstItem="FpR-hd-gAg" firstAttribute="leading" secondItem="Q8F-Et-0J3" secondAttribute="leading" id="4Tl-YG-6Az"/>
                 <constraint firstItem="KuJ-0x-0iW" firstAttribute="top" secondItem="Q8F-Et-0J3" secondAttribute="top" constant="8" id="53r-qy-eq6"/>
+                <constraint firstAttribute="trailing" secondItem="UXV-fM-YBo" secondAttribute="trailing" id="AQO-Tn-kIs"/>
                 <constraint firstItem="KuJ-0x-0iW" firstAttribute="top" secondItem="Q8F-Et-0J3" secondAttribute="top" id="BVo-6Q-fKJ"/>
                 <constraint firstItem="jih-5N-lYV" firstAttribute="centerX" secondItem="Q8F-Et-0J3" secondAttribute="centerX" id="EjU-NH-s2L"/>
+                <constraint firstItem="WOo-hb-mvQ" firstAttribute="top" secondItem="jih-5N-lYV" secondAttribute="bottom" id="Etn-FM-BG8"/>
+                <constraint firstItem="UXV-fM-YBo" firstAttribute="top" secondItem="WOo-hb-mvQ" secondAttribute="bottom" constant="2" id="FXk-yr-aAU"/>
+                <constraint firstAttribute="bottom" secondItem="UXV-fM-YBo" secondAttribute="bottom" id="Q27-Sh-5pU"/>
                 <constraint firstAttribute="trailing" secondItem="FpR-hd-gAg" secondAttribute="trailing" id="Qnf-VV-jOk"/>
+                <constraint firstItem="jih-5N-lYV" firstAttribute="top" secondItem="FpR-hd-gAg" secondAttribute="bottom" constant="5" id="Y9m-eW-Uv7"/>
                 <constraint firstAttribute="bottom" secondItem="WOo-hb-mvQ" secondAttribute="bottom" id="Yje-fh-YHB"/>
+                <constraint firstItem="UXV-fM-YBo" firstAttribute="top" secondItem="WOo-hb-mvQ" secondAttribute="bottom" constant="5" id="dT0-np-Jau"/>
                 <constraint firstAttribute="trailing" secondItem="WOo-hb-mvQ" secondAttribute="trailing" id="kP6-Qj-AWP"/>
                 <constraint firstItem="FpR-hd-gAg" firstAttribute="top" secondItem="KuJ-0x-0iW" secondAttribute="bottom" constant="8" id="l0g-Ko-Lb5"/>
                 <constraint firstItem="WOo-hb-mvQ" firstAttribute="leading" secondItem="Q8F-Et-0J3" secondAttribute="leading" id="uD8-UD-5kn"/>
+                <constraint firstItem="UXV-fM-YBo" firstAttribute="leading" secondItem="Q8F-Et-0J3" secondAttribute="leading" id="uj1-T4-Jcq"/>
                 <constraint firstItem="KuJ-0x-0iW" firstAttribute="leading" secondItem="Q8F-Et-0J3" secondAttribute="leading" id="uzh-hy-w98"/>
                 <constraint firstItem="FpR-hd-gAg" firstAttribute="top" secondItem="KuJ-0x-0iW" secondAttribute="bottom" constant="4" id="xau-HL-Xgs"/>
             </constraints>
@@ -61,6 +71,8 @@
                 <mask key="constraints">
                     <exclude reference="53r-qy-eq6"/>
                     <exclude reference="xau-HL-Xgs"/>
+                    <exclude reference="Yje-fh-YHB"/>
+                    <exclude reference="FXk-yr-aAU"/>
                 </mask>
             </variation>
             <connections>
@@ -68,6 +80,7 @@
                 <outlet property="imageView" destination="jih-5N-lYV" id="uex-U2-AdL"/>
                 <outlet property="tempLabel" destination="WOo-hb-mvQ" id="oYu-bP-8j1"/>
                 <outlet property="timeLabel" destination="FpR-hd-gAg" id="Dq4-Pq-u8b"/>
+                <outlet property="windView" destination="UXV-fM-YBo" id="1F5-kF-MmE"/>
             </connections>
             <point key="canvasLocation" x="196" y="317"/>
         </collectionViewCell>

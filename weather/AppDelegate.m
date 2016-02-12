@@ -19,10 +19,6 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
     
-    if ([[NSUserDefaults standardUserDefaults] stringForKey:@"MMWeatherUnit"] == nil) {
-        [[NSUserDefaults standardUserDefaults] setObject:@"metric" forKey:@"MMWeatherUnit"];
-    }
-    
     [[UIApplication sharedApplication] setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
     
     return YES;

@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "MMWindView.h"
 
 @interface MMForecastCollectionViewCell : UICollectionViewCell
 
@@ -14,6 +15,7 @@
 @property (weak, nonatomic, readonly) IBOutlet UIImageView *imageView;
 @property (weak, nonatomic, readonly) IBOutlet UILabel *dateLabel;
 @property (weak, nonatomic, readonly) IBOutlet UILabel *timeLabel;
+@property (weak, nonatomic, readonly) IBOutlet MMWindView *windView;
 
 
 @end

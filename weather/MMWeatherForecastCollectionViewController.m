@@ -11,10 +11,11 @@
 #import "MMCollectionViewFlowLayout.h"
 
 #import "UIImageView+Networking.h"
+#import "MMOpenWeatherMapManager.h"
 
 @import QuartzCore;
 
-@interface MMWeatherForecastCollectionViewController ()
+@interface MMWeatherForecastCollectionViewController () <UIGestureRecognizerDelegate>
 
 @property (strong, nonatomic)NSArray *fiveDayForecast;
 
@@ -36,7 +37,17 @@ static NSString *const fiveDayForecastKeyPath = @"self.city.fiveDayForcast";
     // Uncomment the following line to preserve selection between presentations
     // self.clearsSelectionOnViewWillAppear = NO;
     
-    [self addObserver:self forKeyPath:fiveDayForecastKeyPath options:NSKeyValueObservingOptionNew context:nil];
+//    [self addObserver:self forKeyPath:fiveDayForecastKeyPath options:NSKeyValueObservingOptionNew context:nil];
+    
+    [[MMOpenWeatherMapManager sharedManager] fetchFiveDayForecastForCityWithID:self.city.cityID completionHandler:^(NSError *error) {
+        
+        if (error == nil) {
+            [self.loadingIndicator stopAnimating];
+            self.loadingIndicator.hidden = YES;
+            self.fiveDayForecast = [[MMCityManager defaultManager] fiveDayForecastForCity:self.city];
+            [self.collectionView reloadData];
+        }
+    }];
     
     // Register cell classes
     [self.collectionView registerNib:[UINib nibWithNibName:@"MMForecastCollectionViewCell" bundle:nil] forCellWithReuseIdentifier:reuseIdentifier];
@@ -61,7 +72,7 @@ static NSString *const fiveDayForecastKeyPath = @"self.city.fiveDayForcast";
 }
 
 - (void)dealloc {
-        [self removeObserver:self forKeyPath:fiveDayForecastKeyPath];
+//        [self removeObserver:self forKeyPath:fiveDayForecastKeyPath];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -69,16 +80,16 @@ static NSString *const fiveDayForecastKeyPath = @"self.city.fiveDayForcast";
     // Dispose of any resources that can be recreated.
 }
 
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSString *,id> *)change context:(void *)context {
-    
-    if ([keyPath isEqualToString:fiveDayForecastKeyPath]) {
-        [self.loadingIndicator stopAnimating];
-        self.loadingIndicator.hidden = YES;
-        self.fiveDayForecast = [[MMCityManager defaultManager] fiveDayForecastForCity:self.city];
-        [self.collectionView reloadData];
-    }
-    
-}
+//- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSString *,id> *)change context:(void *)context {
+//    
+//    if ([keyPath isEqualToString:fiveDayForecastKeyPath]) {
+//        [self.loadingIndicator stopAnimating];
+//        self.loadingIndicator.hidden = YES;
+//        self.fiveDayForecast = [[MMCityManager defaultManager] fiveDayForecastForCity:self.city];
+//        [self.collectionView reloadData];
+//    }
+//    
+//}
 
 - (void)stopLoadingIndicator {
     [self.loadingIndicator stopAnimating];
@@ -103,7 +114,7 @@ static NSString *const fiveDayForecastKeyPath = @"self.city.fiveDayForcast";
     Weather *weather = self.fiveDayForecast[indexPath.row];
     
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-    formatter.dateFormat = @"EEEE";
+    formatter.dateFormat = @"eeee";
     
     NSDateFormatter *timeFormatter = [[NSDateFormatter alloc] init];
     timeFormatter.dateFormat = @"HH:mm";
@@ -112,6 +123,8 @@ static NSString *const fiveDayForecastKeyPath = @"self.city.fiveDayForcast";
     cell.timeLabel.text = [timeFormatter stringFromDate:weather.dataTimeText];
     cell.tempLabel.text = [NSString stringWithFormat:@"%ldº", weather.temp.integerValue];
     [cell.imageView setImageWithURLString:[[MMCityManager defaultManager] iconURLStringForWeather:weather] placeholder:nil];;
+    cell.windView.windAngle = weather.windDegree.doubleValue;
+    cell.windView.windSpeed = weather.windSpeed.doubleValue;
     
     return cell;
 }
@@ -146,5 +159,7 @@ static NSString *const fiveDayForecastKeyPath = @"self.city.fiveDayForcast";
 	
 }
 */
+
+#pragma mark - UIGestureRecognizerDelegate
 
 @end

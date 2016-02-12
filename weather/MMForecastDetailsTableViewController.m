@@ -14,6 +14,8 @@
 #import "UIImageView+Networking.h"
 #import "MMUnitsManager.h"
 
+#import "MMWindView.h"
+
 #import "MMWeatherForecastCollectionViewController.h"
 
 @interface MMForecastDetailsTableViewController ()
@@ -23,6 +25,8 @@
 @property (weak, nonatomic) IBOutlet UILabel *temperatureLabel;
 @property (weak, nonatomic) IBOutlet UILabel *descriptionLabel;
 @property (weak, nonatomic) IBOutlet UIImageView *iconImageView;
+
+@property (weak, nonatomic) IBOutlet MMWindView *windView;
 
 @end
 
@@ -38,6 +42,9 @@ static NSString *const kFiveDayForecastCollectionViewIdentifier = @"ForecastColl
     
     Weather *currentWeather = (Weather *)self.city.currentWeather;
     
+    self.windView.windAngle = currentWeather.windDegree.doubleValue;
+    self.windView.windSpeed = currentWeather.windSpeed.doubleValue;
+    
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
     formatter.dateFormat = @"HH:mm";
     
@@ -45,8 +52,6 @@ static NSString *const kFiveDayForecastCollectionViewIdentifier = @"ForecastColl
                              @{@"humidity" : [currentWeather.humidity.stringValue stringByAppendingString:[MMUnitsManager sharedManager].humidityUnit]},
                              @{@"sunrise" : [formatter stringFromDate:[NSDate dateWithTimeIntervalSince1970:currentWeather.sunrise.doubleValue]]},
                              @{@"sunset" : [formatter stringFromDate:[NSDate dateWithTimeIntervalSince1970:currentWeather.sunset.doubleValue]]}];
-    
-    [[MMOpenWeatherMapManager sharedManager] fetchFiveDayForecastForCityWithID:self.city.cityID completionHandler:nil];
     
     NSInteger temp = currentWeather.temp.integerValue;
     self.temperatureLabel.text = [NSString stringWithFormat:@"%ldº", (long)temp];
@@ -137,5 +142,6 @@ static NSString *const kFiveDayForecastCollectionViewIdentifier = @"ForecastColl
     // Pass the selected object to the new view controller.
 }
 */
+
 
 @end

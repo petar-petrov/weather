@@ -117,16 +117,17 @@
                     <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" indicatorStyle="white" dataMode="prototypes" id="DFS-D9-Su9">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="200"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" red="0.29803921570000003" green="0.65098039220000004" blue="0.92156862750000001" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="backgroundColor" red="0.94509803921568625" green="0.94509803921568625" blue="0.94509803921568625" alpha="1" colorSpace="calibratedRGB"/>
                         <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="10" minimumInteritemSpacing="10" id="Ujn-Vo-v6C">
                             <size key="itemSize" width="162" height="576"/>
                             <size key="headerReferenceSize" width="0.0" height="0.0"/>
                             <size key="footerReferenceSize" width="0.0" height="0.0"/>
                             <inset key="sectionInset" minX="10" minY="10" maxX="10" maxY="10"/>
                         </collectionViewFlowLayout>
-                        <activityIndicatorView key="backgroundView" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="white" id="4Ja-YV-IyW">
-                            <rect key="frame" x="0.0" y="0.0" width="600" height="200"/>
+                        <activityIndicatorView key="backgroundView" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="whiteLarge" id="4Ja-YV-IyW">
+                            <rect key="frame" x="282" y="81" width="37" height="37"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <color key="color" red="0.29803921570000003" green="0.65098039220000004" blue="0.92156862750000001" alpha="1" colorSpace="calibratedRGB"/>
                         </activityIndicatorView>
                         <cells/>
                         <connections>
@@ -188,9 +189,8 @@
                                     <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                     <nil key="highlightedColor"/>
                                 </label>
-                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="xLI-6c-2bD">
+                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="xLI-6c-2bD" customClass="MMWindView">
                                     <rect key="frame" x="516" y="8" width="76" height="76"/>
-                                    <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                                     <constraints>
                                         <constraint firstAttribute="width" secondItem="xLI-6c-2bD" secondAttribute="height" multiplier="1:1" id="E01-6h-8GZ"/>
                                         <constraint firstAttribute="width" constant="76" id="Fah-Lk-k45"/>
@@ -214,7 +214,7 @@
                             </constraints>
                         </view>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="DetailsCell" id="21W-pc-C4v" customClass="MMForecastDetailsTableViewCell">
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="DetailsCell" id="21W-pc-C4v" customClass="MMForecastDetailsTableViewCell">
                                 <rect key="frame" x="0.0" y="328" width="600" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="21W-pc-C4v" id="Cqu-5A-h6B">
@@ -258,6 +258,7 @@
                         <outlet property="descriptionLabel" destination="wr9-n4-zea" id="YWU-n5-yy1"/>
                         <outlet property="iconImageView" destination="j61-dz-1R8" id="pWu-Hd-cM4"/>
                         <outlet property="temperatureLabel" destination="Egs-EF-78B" id="fkT-zb-YHq"/>
+                        <outlet property="windView" destination="xLI-6c-2bD" id="Hx9-aN-7ab"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="5nh-u6-jXg" userLabel="First Responder" sceneMemberID="firstResponder"/>

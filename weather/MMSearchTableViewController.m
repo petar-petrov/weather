@@ -55,6 +55,8 @@
     self.navigationItem.titleView = self.searchController.searchBar;
     
     self.definesPresentationContext = YES;
+    
+    self.tableView.keyboardDismissMode = UIScrollViewKeyboardDismissModeInteractive;
 }
 
 - (void)viewDidAppear:(BOOL)animated {

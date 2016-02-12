@@ -8,12 +8,14 @@
 
 #import "MMForecastCollectionViewCell.h"
 
+
 @interface MMForecastCollectionViewCell ()
 
 @property (weak, nonatomic, readwrite) IBOutlet UILabel *tempLabel;
 @property (weak, nonatomic, readwrite) IBOutlet UIImageView *imageView;
 @property (weak, nonatomic, readwrite) IBOutlet UILabel *dateLabel;
 @property (weak, nonatomic, readwrite) IBOutlet UILabel *timeLabel;
+@property (weak, nonatomic, readwrite) IBOutlet MMWindView *windView;
 
 @property (assign, nonatomic, getter=isConstraintsSet) BOOL constraintsSet;
 
@@ -21,34 +23,15 @@
 
 @implementation MMForecastCollectionViewCell
 
-- (instancetype)initWithCoder:(NSCoder *)aDecoder {
-    self = [super initWithCoder:aDecoder];
-
-    if (self) {
-       self.backgroundColor = [UIColor lightGrayColor];
-    }
-    
-    return self;
-}
-
-- (instancetype)initWithFrame:(CGRect)frame {
-    self = [super initWithFrame:frame];
-    
-    if (self) {
-        self.backgroundColor = [UIColor lightGrayColor];
-    }
-    
-    return self;
-}
-
 - (void)prepareForReuse {
     [super prepareForReuse];
-    
-    self.backgroundColor = [UIColor lightGrayColor];
+
     self.tempLabel.text = @"0";
     self.dateLabel.text = @"Today";
     self.timeLabel.text = @"00:00";
     self.imageView.image = nil;
+    self.windView.windSpeed = 0;
+    self.windView.windAngle = 0;
     
 }
 
