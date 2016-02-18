@@ -8,8 +8,17 @@
 
 #import "AppDelegate.h"
 #import "MMOpenWeatherMapManager.h"
+#import <PKRevealController/PKRevealController.h>
+#import "MMMenuTableViewController.h"
+#import "MMCitiesTableViewController.h"
+#import "MMMapViewController.h"
+#import "MMCityManager.h"
+#import "MMForecastDetailsTableViewController.h"
+#import <notify.h>
 
-@interface AppDelegate ()
+@interface AppDelegate () <UIGestureRecognizerDelegate>
+
+@property (strong, nonatomic) PKRevealController *revealController;
 
 @end
 
@@ -18,8 +27,27 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
+
+    self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
     
     [[UIApplication sharedApplication] setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
+    
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    
+    UINavigationController *navController = [storyboard instantiateViewControllerWithIdentifier:@"WeatherList"];
+    UINavigationController *mapViewController = [storyboard instantiateViewControllerWithIdentifier:@"Map"];
+    
+    UINavigationController *menuViewController = [storyboard instantiateViewControllerWithIdentifier:@"NavigationMenu"];
+    
+    [((MMMenuTableViewController *)menuViewController.viewControllers[0]) setViewControllers:@[navController, mapViewController]];
+    
+    self.revealController = [PKRevealController revealControllerWithFrontViewController:navController leftViewController:menuViewController];
+    
+    [self.window setRootViewController:self.revealController];
+    
+    self.window.backgroundColor = [UIColor whiteColor];
+    
+    [self.window  makeKeyAndVisible];
     
     return YES;
 }
@@ -40,6 +68,26 @@
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+    
+    [self mergeChangesFromWidget];
+    
+    int registrantionToken = 0;
+    
+    notify_register_dispatch("buttonPressed", &registrantionToken, dispatch_get_main_queue(), ^(int token){
+        MMMenuTableViewController *menuTableViewController = (MMMenuTableViewController *)((UINavigationController *)self.revealController.leftViewController).viewControllers[0];
+        
+        MMCitiesTableViewController *citiesViewController = (MMCitiesTableViewController *)((UINavigationController *)menuTableViewController.viewControllers[0]).viewControllers[0];
+        
+        [self.revealController setFrontViewController:(UINavigationController *)menuTableViewController.viewControllers[0]];
+        [self.revealController showViewController:(UINavigationController *)menuTableViewController.viewControllers[0]];
+        
+        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+        
+        MMForecastDetailsTableViewController *forecastTableViewController = [storyboard instantiateViewControllerWithIdentifier:@"ForecastDetailsView"];
+        forecastTableViewController.city = [[MMCityManager defaultManager] favoriteCity];
+        
+        [citiesViewController.navigationController pushViewController:forecastTableViewController animated:NO];
+    });
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application {
@@ -55,4 +103,38 @@
     }];
 }
 
+#pragma mark - UIGestureRecognizerDelegate
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRequireFailureOfGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    if ([otherGestureRecognizer isEqual:self.revealController.revealPanGestureRecognizer]) {
+        return YES;
+    }
+    
+    return NO;
+}
+
+#pragma mark - Private 
+
+- (void)mergeChangesFromWidget {
+    NSUserDefaults *userDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.weatherContainer"];
+    
+    NSData *data = [userDefaults dataForKey:@"anKey"];
+    
+    if (data) {
+        NSArray *notificationQueue = [NSKeyedUnarchiver unarchiveObjectWithData:data];
+        
+        if (notificationQueue) {
+            MMWeatherCoreData *dataStore = [MMWeatherCoreData defaultDataStore];
+            
+            [dataStore.mainContext performBlock:^{
+                for (NSDictionary *notificationData in notificationQueue) {
+                    [NSManagedObjectContext mergeChangesFromRemoteContextSave:notificationData intoContexts:@[dataStore.mainContext]];
+                }
+            }];
+        }
+    }
+    
+    [userDefaults removeObjectForKey:@"anKey"];
+    [userDefaults synchronize];
+}
 @end

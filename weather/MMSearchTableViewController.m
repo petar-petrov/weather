@@ -95,7 +95,7 @@
 
 - (void)updateSearchResultsForSearchController:(UISearchController *)searchController {
     
-    if (searchController.searchBar.text.length > 2) {
+    if (searchController.searchBar.text.length > 1) {
         NSLog(@"%@",searchController.searchBar.text);
         
         [self.manager searchForCityWithText:searchController.searchBar.text completionHandler:^(NSArray *result){

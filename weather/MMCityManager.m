@@ -41,6 +41,18 @@
     return manager;
 }
 
+#pragma mark - Initilizers
+
+- (instancetype)initWithDataStore:(MMWeatherCoreData *)dataStore {
+    self = [super init];
+    
+    if (self) {
+        _dataStore = dataStore;
+    }
+    
+    return self;
+}
+
 #pragma mark - Add/Delete City
 
 - (void)addCityWithInfo:(NSDictionary *)info {
@@ -104,7 +116,7 @@
             __autoreleasing NSError *error = nil;
             
             if(![strongSelf.privateContext save:&error] && error != nil) {
-                NSLog(@"%@", error);
+                NSLog(@"%@ : %@", error, [error userInfo]);
                 abort();
             }
         }
@@ -122,13 +134,13 @@
         
         City *city = [strongSelf cityWithID:cityID inContext:strongSelf.privateContext];
         
-        [city removeFiveDayForcast:city.fiveDayForcast];
+        [city removeFiveDayForecast:city.fiveDayForecast];
         
         @autoreleasepool {
             for (NSDictionary *forecast in forecastInfo) {
                 Weather *weather = [strongSelf weatherForCityWithInfo:forecast inManagedObjectContext:strongSelf.privateContext];
                 
-                [city addFiveDayForcastObject:weather];
+                [city addFiveDayForecastObject:weather];
             }
         }
         
@@ -145,9 +157,9 @@
 - (NSArray <Weather *> *)fiveDayForecastForCity:(City *)city {
     City *mainContextCity = [self.dataStore.mainContext existingObjectWithID:city.objectID error:nil];
     
-    NSArray *fiveDayForecast = [mainContextCity.fiveDayForcast allObjects];
+    NSArray *fiveDayForecast = [mainContextCity.fiveDayForecast allObjects];
     
-    fiveDayForecast = [fiveDayForecast sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"dataTimeText" ascending:YES]]];
+    fiveDayForecast = [fiveDayForecast sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"dataTime" ascending:YES]]];
     
     return fiveDayForecast;
 }
@@ -190,7 +202,60 @@ static NSString *const iconURLStringBase = @"http://openweathermap.org/img/w/";
     return nil;
 }
 
+- (void)setCityAsFavorite:(City *)city {
+    
+    __weak MMCityManager *weakSelf = self;
+
+    [self.privateContext performBlock:^{
+        MMCityManager *strongSelf = weakSelf;
+        
+        // check if city is current favorite and if YES return
+        City *currentFavoriteCity = [strongSelf favoriteCityInContext:strongSelf.privateContext];
+        
+        if (currentFavoriteCity.objectID == city.objectID) {
+            return;
+        }
+        
+        // unfavorite current
+        currentFavoriteCity.favorite = @(NO);
+        
+        // set the city as favorite
+        City *fCity = [self.privateContext existingObjectWithID:city.objectID error:nil];
+        
+        fCity.favorite = @(YES);
+        
+        __autoreleasing NSError *error = nil;
+        
+        if (![strongSelf.privateContext save:nil] && error != nil) {
+            NSLog(@"%@:%@", error, [error userInfo]);
+            abort();
+        }
+    }];
+}
+
+- (City *)favoriteCity {
+    __block City *favoriteCity = nil;
+    
+    [self.dataStore.mainContext performBlockAndWait:^{
+        favoriteCity = [self favoriteCityInContext:self.dataStore.mainContext];
+    }];
+    
+    return favoriteCity;
+}
+
 #pragma mark - Private
+
+- (City *)favoriteCityInContext:(NSManagedObjectContext *)context {
+    NSFetchRequest *request = [[NSFetchRequest alloc] init];
+    
+    request.entity = [NSEntityDescription entityForName:@"City" inManagedObjectContext:context];
+
+    request.predicate = [NSPredicate predicateWithFormat:@"favorite = YES"];
+    
+    NSArray *fetchedObjects = [context executeFetchRequest:request error:nil];
+    
+    return [fetchedObjects lastObject];
+}
 
 - (NSDate *)dateFromString:(NSString *)dateString {
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
@@ -199,15 +264,7 @@ static NSString *const iconURLStringBase = @"http://openweathermap.org/img/w/";
     return [dateFormatter dateFromString:dateString];
 }
 
-- (instancetype)initWithDataStore:(MMWeatherCoreData *)dataStore {
-    self = [super init];
-    
-    if (self) {
-        _dataStore = dataStore;
-    }
-    
-    return self;
-}
+
 
 - (City *)cityWithName:(NSString *)name inContext:(NSManagedObjectContext *)context {
     NSFetchRequest *request = [[NSFetchRequest alloc] init];
@@ -288,7 +345,7 @@ static NSString *const iconURLStringBase = @"http://openweathermap.org/img/w/";
     for (NSString *key in allKeys) {
         if ([key isEqualToString:@"dt_txt"]) {
             currentWeather.isFiveDayForecast = @(YES);
-            currentWeather.dataTimeText = [self dateFromString:info[@"dt_txt"]];
+            currentWeather.dataTime = [self dateFromString:info[@"dt_txt"]];
             
             return currentWeather;
         }

@@ -12,6 +12,8 @@
 
 #import "MMWeatherAnnotation.h"
 
+@import QuartzCore;
+
 @interface MMWeatherAnnotationView ()
 
 //@property (strong, nonatomic, readwrite) City *city;
@@ -116,5 +118,6 @@
     
     [super updateConstraints];
 }
+
 
 @end

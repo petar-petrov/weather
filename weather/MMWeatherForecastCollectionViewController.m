@@ -25,7 +25,7 @@
 
 @implementation MMWeatherForecastCollectionViewController
 
-static NSString *const reuseIdentifier = @"ForecastCell";
+static NSString *const kReuseIdentifier = @"ForecastCell";
 
 static NSString *const fiveDayForecastKeyPath = @"self.city.fiveDayForcast";
 
@@ -36,8 +36,6 @@ static NSString *const fiveDayForecastKeyPath = @"self.city.fiveDayForcast";
     
     // Uncomment the following line to preserve selection between presentations
     // self.clearsSelectionOnViewWillAppear = NO;
-    
-//    [self addObserver:self forKeyPath:fiveDayForecastKeyPath options:NSKeyValueObservingOptionNew context:nil];
     
     [[MMOpenWeatherMapManager sharedManager] fetchFiveDayForecastForCityWithID:self.city.cityID completionHandler:^(NSError *error) {
         
@@ -50,7 +48,7 @@ static NSString *const fiveDayForecastKeyPath = @"self.city.fiveDayForcast";
     }];
     
     // Register cell classes
-    [self.collectionView registerNib:[UINib nibWithNibName:@"MMForecastCollectionViewCell" bundle:nil] forCellWithReuseIdentifier:reuseIdentifier];
+    [self.collectionView registerNib:[UINib nibWithNibName:@"MMForecastCollectionViewCell" bundle:nil] forCellWithReuseIdentifier:kReuseIdentifier];
     
     // Do any additional setup after loading the view.
 }
@@ -71,26 +69,6 @@ static NSString *const fiveDayForecastKeyPath = @"self.city.fiveDayForcast";
     [self.loadingIndicator startAnimating];
 }
 
-- (void)dealloc {
-//        [self removeObserver:self forKeyPath:fiveDayForecastKeyPath];
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
-//- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSString *,id> *)change context:(void *)context {
-//    
-//    if ([keyPath isEqualToString:fiveDayForecastKeyPath]) {
-//        [self.loadingIndicator stopAnimating];
-//        self.loadingIndicator.hidden = YES;
-//        self.fiveDayForecast = [[MMCityManager defaultManager] fiveDayForecastForCity:self.city];
-//        [self.collectionView reloadData];
-//    }
-//    
-//}
-
 - (void)stopLoadingIndicator {
     [self.loadingIndicator stopAnimating];
 }
@@ -109,7 +87,7 @@ static NSString *const fiveDayForecastKeyPath = @"self.city.fiveDayForcast";
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     
-    MMForecastCollectionViewCell *cell = (MMForecastCollectionViewCell *)[collectionView dequeueReusableCellWithReuseIdentifier:reuseIdentifier forIndexPath:indexPath];
+    MMForecastCollectionViewCell *cell = (MMForecastCollectionViewCell *)[collectionView dequeueReusableCellWithReuseIdentifier:kReuseIdentifier forIndexPath:indexPath];
     
     Weather *weather = self.fiveDayForecast[indexPath.row];
     
@@ -119,47 +97,15 @@ static NSString *const fiveDayForecastKeyPath = @"self.city.fiveDayForcast";
     NSDateFormatter *timeFormatter = [[NSDateFormatter alloc] init];
     timeFormatter.dateFormat = @"HH:mm";
     
-    cell.dateLabel.text = [formatter stringFromDate:weather.dataTimeText];
-    cell.timeLabel.text = [timeFormatter stringFromDate:weather.dataTimeText];
+    cell.dateLabel.text = [formatter stringFromDate:weather.dataTime];
+    cell.timeLabel.text = [timeFormatter stringFromDate:weather.dataTime];
     cell.tempLabel.text = [NSString stringWithFormat:@"%ldº", weather.temp.integerValue];
     [cell.imageView setImageWithURLString:[[MMCityManager defaultManager] iconURLStringForWeather:weather] placeholder:nil];;
     cell.windView.windAngle = weather.windDegree.doubleValue;
     cell.windView.windSpeed = weather.windSpeed.doubleValue;
+    cell.windView.arrowColor = [[UIColor alloc]initWithRed: 0.219034 green: 0.598590 blue: 0.815217 alpha: 1 ];
     
     return cell;
 }
-
-#pragma mark <UICollectionViewDelegate>
-
-/*
-// Uncomment this method to specify if the specified item should be highlighted during tracking
-- (BOOL)collectionView:(UICollectionView *)collectionView shouldHighlightItemAtIndexPath:(NSIndexPath *)indexPath {
-	return YES;
-}
-*/
-
-/*
-// Uncomment this method to specify if the specified item should be selected
-- (BOOL)collectionView:(UICollectionView *)collectionView shouldSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-    return YES;
-}
-*/
-
-/*
-// Uncomment these methods to specify if an action menu should be displayed for the specified item, and react to actions performed on the item
-- (BOOL)collectionView:(UICollectionView *)collectionView shouldShowMenuForItemAtIndexPath:(NSIndexPath *)indexPath {
-	return NO;
-}
-
-- (BOOL)collectionView:(UICollectionView *)collectionView canPerformAction:(SEL)action forItemAtIndexPath:(NSIndexPath *)indexPath withSender:(id)sender {
-	return NO;
-}
-
-- (void)collectionView:(UICollectionView *)collectionView performAction:(SEL)action forItemAtIndexPath:(NSIndexPath *)indexPath withSender:(id)sender {
-	
-}
-*/
-
-#pragma mark - UIGestureRecognizerDelegate
 
 @end

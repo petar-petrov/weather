@@ -89,13 +89,27 @@ static NSString *const appid = @"36eea9dcce34a3ec067b176eda6c1987";
     }];
 }
 
+- (void)updateForecastForCityWithID:(NSNumber *)cityID completionHandler:(void(^)(void))handler {
+    City *city = [[MMCityManager defaultManager] cityWithID:cityID];
+    
+    [self fetchWeatherForecaseForCities:@[city] completionHandler:^(NSArray *list){
+        [[MMCityManager defaultManager] cityWithID:cityID updateForecast:[list lastObject] save:YES];
+    }];
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (handler != nil) {
+            handler();
+        }
+    });
+}
+
 - (void)fetchFiveDayForecastForCityWithID:(NSNumber *)cityID completionHandler:(void (^)(NSError *error))handler {
     
     NSString *idsString = cityID.stringValue;
     
     NSURL *url = [self constructURLWithPath:@"/data/2.5/forecast" queryDictionary:@{@"id" : idsString, @"appid" : appid, @"units" : self.unit}];
     
-    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+//    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
     
     [MMURLRequestHandler dataRequestWithURL:url
                                successBlock:^(id data) {
@@ -104,7 +118,7 @@ static NSString *const appid = @"36eea9dcce34a3ec067b176eda6c1987";
                                    dispatch_async(dispatch_get_main_queue(), ^{
                                        [[MMCityManager defaultManager] cityWithID:cityID updateFiveDayForecast:forecast];
 
-                                       [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+//                                       [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
 
                                        if (handler != nil) {
                                            handler(nil);
@@ -137,7 +151,7 @@ static NSString *const appid = @"36eea9dcce34a3ec067b176eda6c1987";
     
     NSURL *url = [self constructURLWithPath:@"/data/2.5/group" queryDictionary:@{@"id" : idsString, @"appid" : appid, @"units" : self.unit}];
     
-    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+//    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
     
     [MMURLRequestHandler dataRequestWithURL:url
                                successBlock:^(id data){
@@ -147,7 +161,7 @@ static NSString *const appid = @"36eea9dcce34a3ec067b176eda6c1987";
                                        if (handler != nil) {
                                            handler(cities);
 
-                                           [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+//                                           [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
                                        }
                                    });
                                }
@@ -155,10 +169,6 @@ static NSString *const appid = @"36eea9dcce34a3ec067b176eda6c1987";
 }
 
 - (void)searchForCityWithText:(NSString *)text completionHandler:(void(^)(NSArray *))handler {
-    NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
-    [sessionConfiguration setHTTPAdditionalHeaders:@{@"Accept": @"applcatoin/json"}];
-    
-    NSURLSession *session = [NSURLSession sessionWithConfiguration:sessionConfiguration delegate:nil delegateQueue:nil];
     
     NSString *persentEncodedString = [text stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]];
     
@@ -169,37 +179,25 @@ static NSString *const appid = @"36eea9dcce34a3ec067b176eda6c1987";
         self.dataTask = nil;
     }
     
-    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+//    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
     
-    self.dataTask = [session dataTaskWithURL:url
-                           completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-                               
-                               NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
-                               
-                               __autoreleasing NSError *jsonError = nil;
-                               
-                               if (httpResponse.statusCode == 200) {
-                                   id result = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:&jsonError];
-                                   
-                                   if (!jsonError) {
-                                       NSMutableArray *cityFound = [NSMutableArray new];
-                                       
-                                       for (NSDictionary *cityInfo in [result valueForKey:@"list"]) {
-                                           [cityFound addObject:@{@"name" : [cityInfo valueForKey:@"name" ], @"cityData" : cityInfo}];
-                                       }
-                                    
-                                       dispatch_async(dispatch_get_main_queue(), ^{
-                                           if (handler != nil) {
-                                               handler(cityFound);
-                                           }
-                                           
-                                           [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-                                       });
-                                   }
-                               }
-                           }];
-    
-    [self.dataTask resume];
+    self.dataTask = [MMURLRequestHandler dataRequestWithURL:url
+                                               successBlock:^(id data){
+                                                   NSMutableArray *cityFound = [NSMutableArray new];
+           
+                                                  for (NSDictionary *cityInfo in [data valueForKey:@"list"]) {
+                                                      [cityFound addObject:@{@"name" : [cityInfo valueForKey:@"name" ], @"cityData" : cityInfo}];
+                                                  }
+           
+                                                  dispatch_async(dispatch_get_main_queue(), ^{
+                                                      if (handler != nil) {
+                                                          handler(cityFound);
+                                                      }
+                                                      
+//                                                      [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+                                                  });
+                                               }
+                                                  failBlock:nil];
 }
 
 #pragma mark - Private

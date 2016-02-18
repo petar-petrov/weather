@@ -7,9 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "MMMenuButtonViewController.h"
 
 
-
-@interface MMMainTableViewController : UITableViewController
+@interface MMCitiesTableViewController : MMMenuButtonTableViewController
 
 @end

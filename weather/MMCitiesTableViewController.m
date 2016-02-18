@@ -6,7 +6,7 @@
 //  Copyright © 2016 Petar Petrov. All rights reserved.
 //
 
-#import "MMMainTableViewController.h"
+#import "MMCitiesTableViewController.h"
 #import "MMOpenWeatherMapManager.h"
 #import "MMWeatherTableViewCell.h"
 #import "UIImageView+Networking.h"
@@ -19,10 +19,12 @@
 
 #import "MMCityManager.h"
 #import "MMUnitsManager.h"
+#import <PKRevealController/PKRevealController.h>
+#import "MMMenuButtonViewController.h"
 
 @import CoreData;
 
-@interface MMMainTableViewController () <NSFetchedResultsControllerDelegate>
+@interface MMCitiesTableViewController () <NSFetchedResultsControllerDelegate, UIGestureRecognizerDelegate>
 
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultController;
 
@@ -37,7 +39,7 @@
 
 @end
 
-@implementation MMMainTableViewController
+@implementation MMCitiesTableViewController
 
 static NSString *const reuseIdentifier = @"WeatherCell";
 
@@ -78,6 +80,7 @@ static NSString *const reuseIdentifier = @"WeatherCell";
 #pragma mark - Life Cycle
 
 - (void)viewDidLoad {
+    
     [super viewDidLoad];
     
     __autoreleasing NSError *error = nil;
@@ -89,14 +92,21 @@ static NSString *const reuseIdentifier = @"WeatherCell";
     
     [self.tableView registerClass:[MMWeatherTableViewCell class] forCellReuseIdentifier:reuseIdentifier];
     
-    [self setupToolbar];
-    
     self.weatherRefreshControl = [[UIRefreshControl alloc] init];
     [self.weatherRefreshControl addTarget:self action:@selector(pullDownRefresh) forControlEvents:UIControlEventValueChanged];
     
     self.refreshControl = self.weatherRefreshControl;
     
-    [self configureNavgationBarTitle];
+    self.revealController.revealPanGestureRecognizer.delegate = self;
+    
+    self.title = @"Cities";
+    
+    [[NSNotificationCenter defaultCenter] addObserverForName:MMUnitsManagerDidChangeUnit
+                                                      object:[MMUnitsManager sharedManager]
+                                                       queue:nil
+                                                  usingBlock:^(NSNotification *notification){
+                                                      [self refreshWeatherData];
+                                                  }];
 }
 
 - (void)pullDownRefresh {
@@ -111,33 +121,8 @@ static NSString *const reuseIdentifier = @"WeatherCell";
     [self refreshWeatherData];
 }
 
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
-    
-    self.navigationController.toolbarHidden = NO;
-}
-
-- (void)viewWillDisappear:(BOOL)animated {
-    [super viewWillDisappear:animated];
-    
-    self.navigationController.toolbarHidden = YES;
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
-- (void)changeUnits:(UISegmentedControl *)sender
-{
-    if (sender.selectedSegmentIndex == 0) {
-        [[MMUnitsManager sharedManager] setUnits:MMUnitsMetric];
-    } else {
-        [[MMUnitsManager sharedManager] setUnits:MMUnitsImperial];
-    }
-    
-    [self refreshWeatherData];
-    
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:MMUnitsManagerDidChangeUnit object:[MMUnitsManager sharedManager]];
 }
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
@@ -235,23 +220,6 @@ static NSString *const reuseIdentifier = @"WeatherCell";
     [titleLabel sizeToFit];
     
     self.navigationItem.titleView = titleLabel;
-}
-
-- (void)setupToolbar {
-    UISegmentedControl *unitsSegmentedController = [[UISegmentedControl alloc] initWithItems:@[@"ºC", @"ºF"]];
-    [unitsSegmentedController setWidth:44.0f forSegmentAtIndex:0];
-    [unitsSegmentedController setWidth:44.0f forSegmentAtIndex:1];
-    [unitsSegmentedController addTarget:self action:@selector(changeUnits:) forControlEvents:UIControlEventValueChanged];
-
-    unitsSegmentedController.selectedSegmentIndex = ([[MMUnitsManager sharedManager].currentUnit isEqualToString:@"metric"]) ? 0 : 1;
-    
-    UIBarButtonItem *unitsBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:unitsSegmentedController];
-    
-    UIBarButtonItem *addBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"plus.png"] style:UIBarButtonItemStylePlain target:self action:@selector(showSearch:)];
-    
-    UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
-    
-    [self setToolbarItems:@[unitsBarButtonItem,flexibleSpace, addBarButtonItem]];
 }
 
 - (void)showSearch:(id)sender {
@@ -356,5 +324,15 @@ static NSString *const reuseIdentifier = @"WeatherCell";
     [self.tableView endUpdates];
 }
 
+#pragma mark - UIGestureRecognizerDelegate
+
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
+    CGPoint touchPosition = [gestureRecognizer locationInView:self.view];
+    
+    if (!(touchPosition.x < 50.0f || touchPosition.x > self.view.bounds.size.width - 50.0f))
+        return NO;
+    
+    return YES;
+}
 
 @end

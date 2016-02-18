@@ -13,4 +13,6 @@
 @property (assign, nonatomic) double windAngle;
 @property (assign, nonatomic) double windSpeed;
 
+@property (strong, nonatomic) UIColor *arrowColor;
+
 @end

@@ -10,6 +10,6 @@
 
 @interface MMURLRequestHandler : NSObject
 
-+ (void)dataRequestWithURL:(NSURL *)url successBlock:(void(^)(id data))successBlock failBlock:(void(^)(NSError *error))failBlock;
++ (NSURLSessionDataTask *)dataRequestWithURL:(NSURL *)url successBlock:(void(^)(id data))successBlock failBlock:(void(^)(NSError *error))failBlock;
 
 @end

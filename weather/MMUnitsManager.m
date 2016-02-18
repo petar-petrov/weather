@@ -14,6 +14,8 @@ static NSString *const kMMWeatherUnit = @"MMweatherUnit";
 static NSString *const kUnitsMetric = @"metric";
 static NSString *const kUnitsImperial = @"imperial";
 
+NSString *const MMUnitsManagerDidChangeUnit = @"MMUnitsManagerDidChangeUnit";
+
 #pragma mark - Custom Accessors
 
 - (NSString *)currentUnit {
@@ -76,6 +78,8 @@ static NSString *const kUnitsImperial = @"imperial";
     }
 
     [[NSUserDefaults standardUserDefaults] synchronize];
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:MMUnitsManagerDidChangeUnit object:self userInfo:nil];
 }
 
 #pragma mark - Private
@@ -91,8 +95,6 @@ static NSString *const kUnitsImperial = @"imperial";
     
     [userDefaults synchronize];
 }
-
-
 
 
 @end

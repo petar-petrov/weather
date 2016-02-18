@@ -4,7 +4,7 @@
 # use_frameworks!
 
 target 'weather' do
-
+  pod 'Reachability', '~> 3.2'
 end
 
 target 'weatherTests' do

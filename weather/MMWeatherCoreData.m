@@ -66,6 +66,7 @@
 
 - (NSManagedObjectContext *)privateContext {
     NSManagedObjectContext *privateManagedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
+    privateManagedObjectContext.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy;
     privateManagedObjectContext.undoManager = nil;
     privateManagedObjectContext.persistentStoreCoordinator = self.persistentStoreCoordinator;
     
@@ -103,6 +104,7 @@
     if (persistentStoreCoordinator != nil) {
         _managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
         [_managedObjectContext setPersistentStoreCoordinator:persistentStoreCoordinator];
+        _managedObjectContext.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy;
     }
     
     return _managedObjectContext;
@@ -124,7 +126,9 @@
         return _persistentStoreCoordinator;
     }
     
-    NSURL *storeURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:@"WeatherDB.sqlite"];
+    NSURL *storeURL = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:@"group.weatherContainer"];
+    
+    storeURL = [storeURL URLByAppendingPathComponent:@"WeatherDB.sqlite"];
     
     __autoreleasing NSError *error = nil;
     

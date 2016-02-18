@@ -28,6 +28,8 @@
 
 @property (weak, nonatomic) IBOutlet MMWindView *windView;
 
+@property (strong, nonatomic) UIBarButtonItem *favoriteButton;
+
 @end
 
 @implementation MMForecastDetailsTableViewController
@@ -58,6 +60,12 @@ static NSString *const kFiveDayForecastCollectionViewIdentifier = @"ForecastColl
     self.descriptionLabel.text = currentWeather.weatherDescription;
     
     [self.iconImageView setImageWithURLString:[[MMCityManager defaultManager] iconURLStringForWeather:self.city.currentWeather] placeholder:nil];
+    
+    NSString *imageName = self.city.favorite.boolValue ? @"favorites-1.png" : @"favorites.png";
+    
+    self.favoriteButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:imageName] style:UIBarButtonItemStylePlain target:self action:@selector(setFavorite:)];
+    
+    self.navigationItem.rightBarButtonItem = self.favoriteButton;
     
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
@@ -98,50 +106,13 @@ static NSString *const kFiveDayForecastCollectionViewIdentifier = @"ForecastColl
     return cell;
 }
 
+#pragma mark - Private
 
-/*
-// Override to support conditional editing of the table view.
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
-    // Return NO if you do not want the specified item to be editable.
-    return YES;
+- (void)setFavorite:(UIBarButtonItem *)sender {
+    [[MMCityManager defaultManager] setCityAsFavorite:self.city];
+    
+    [self.favoriteButton setImage:[UIImage imageNamed:@"favorites-1.png"]];
 }
-*/
-
-/*
-// Override to support editing the table view.
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Delete the row from the data source
-        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    } else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-    }   
-}
-*/
-
-/*
-// Override to support rearranging the table view.
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath {
-}
-*/
-
-/*
-// Override to support conditional rearranging of the table view.
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath {
-    // Return NO if you do not want the item to be re-orderable.
-    return YES;
-}
-*/
-
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 
 @end

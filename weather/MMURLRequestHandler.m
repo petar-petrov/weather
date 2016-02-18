@@ -10,13 +10,13 @@
 
 @implementation MMURLRequestHandler
 
-+ (void)dataRequestWithURL:(NSURL *)url successBlock:(void(^)(id data))successBlock failBlock:(void(^)(NSError *error))failBlock {
++ (NSURLSessionDataTask *)dataRequestWithURL:(NSURL *)url successBlock:(void(^)(id data))successBlock failBlock:(void(^)(NSError *error))failBlock {
     NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
     [sessionConfiguration setHTTPAdditionalHeaders:@{@"Accept": @"applcatoin/json"}];
     
     NSURLSession *session = [NSURLSession sessionWithConfiguration:sessionConfiguration delegate:nil delegateQueue:nil];
     
-    [[session dataTaskWithURL:url
+    NSURLSessionDataTask *dataTask = [session dataTaskWithURL:url
                            completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
                                
                                NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
@@ -50,7 +50,11 @@
                                });
                                
                                
-                           }] resume];
+                           }];
+    
+    [dataTask resume];
+    
+    return dataTask;
 }
 
 @end

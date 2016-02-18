@@ -2,7 +2,7 @@
 //  City+CoreDataProperties.m
 //  weather
 //
-//  Created by Petar Petrov on 10/02/2016.
+//  Created by Petar Petrov on 15/02/2016.
 //  Copyright © 2016 Petar Petrov. All rights reserved.
 //
 //  Choose "Create NSManagedObject Subclass…" from the Core Data editor menu
@@ -17,7 +17,8 @@
 @dynamic latitude;
 @dynamic longitude;
 @dynamic name;
+@dynamic favorite;
 @dynamic currentWeather;
-@dynamic fiveDayForcast;
+@dynamic fiveDayForecast;
 
 @end

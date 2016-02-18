@@ -2,7 +2,7 @@
 //  Weather+CoreDataProperties.h
 //  weather
 //
-//  Created by Petar Petrov on 10/02/2016.
+//  Created by Petar Petrov on 15/02/2016.
 //  Copyright © 2016 Petar Petrov. All rights reserved.
 //
 //  Choose "Create NSManagedObject Subclass…" from the Core Data editor menu
@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface Weather (CoreDataProperties)
 
 @property (nullable, nonatomic, retain) NSNumber *clouds;
-@property (nullable, nonatomic, retain) NSDate *dataTimeText;
+@property (nullable, nonatomic, retain) NSDate *dataTime;
 @property (nullable, nonatomic, retain) NSNumber *humidity;
 @property (nullable, nonatomic, retain) NSString *icon;
 @property (nullable, nonatomic, retain) NSNumber *isFiveDayForecast;

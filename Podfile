@@ -5,6 +5,7 @@
 
 target 'weather' do
   pod 'Reachability', '~> 3.2'
+  pod 'PKRevealController', '~> 2.0'
 end
 
 target 'weatherTests' do

@@ -7,8 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "MMMenuButtonViewController.h"
 
-@interface MMMapViewController : UIViewController
+@interface MMMapViewController : MMMenuButtonViewController
 
 @property (strong, nonatomic) NSArray *cities;
 

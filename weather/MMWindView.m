@@ -24,6 +24,14 @@
 
 #pragma mark - Custom Accessor
 
+- (void)setArrowColor:(UIColor *)arrowColor {
+    if (![_arrowColor isEqual:arrowColor]) {
+        _arrowColor = arrowColor;
+        
+        [self changeArrowImageColor];
+    }
+}
+
 - (void)setWindAngle:(double)windAngle {
     if (_windAngle != windAngle) {
         _windAngle = windAngle;
@@ -41,6 +49,8 @@
     }
 }
 
+#pragma mark - Life Cycle
+
 - (void)awakeFromNib {
     [super awakeFromNib];
     
@@ -53,7 +63,12 @@
     
     [self addSubview:self.northLabel];
     
-    self.imageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"arrow_vertical.png"]];
+    UIImage *image = [[UIImage imageNamed:@"arrow_vertical.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    
+    self.imageView = [[UIImageView alloc] initWithImage:image];
+    
+    // set the default arrow color
+    self.arrowColor = [UIColor lightGrayColor];
     
     self.imageView.translatesAutoresizingMaskIntoConstraints = NO;
     
@@ -85,19 +100,18 @@
         self.constraintsSet = YES;
     }
     
-    
-    
     [super updateConstraints];
     
     
 }
 
-/*
-// Only override drawRect: if you perform custom drawing.
-// An empty implementation adversely affects performance during animation.
-- (void)drawRect:(CGRect)rect {
-    // Drawing code
+#pragma mark - Private
+
+- (void)changeArrowImageColor {
+    if (self.imageView) {
+        self.imageView.tintColor = self.arrowColor;
+    }
+    
 }
-*/
 
 @end

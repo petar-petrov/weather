@@ -11,6 +11,8 @@
 //extern NSString *const kUnitsMetric;
 //extern NSString *const kUnitsImperial;
 
+extern NSString *const MMUnitsManagerDidChangeUnit;
+
 typedef NS_ENUM(NSInteger, MMUnits) {
     MMUnitsMetric,
     MMUnitsImperial
@@ -27,5 +29,10 @@ typedef NS_ENUM(NSInteger, MMUnits) {
 @property (nonatomic, readonly) NSString *speedUnit;
 @property (nonatomic, readonly) NSString *pressureUnit;
 @property (nonatomic, readonly) NSString *humidityUnit;
+
+//- (NSString *)temperatureStringForValue:(float)value;
+//- (NSString *)humidityStringForValue:(NSInteger)value;
+//- (NSString *)pressureStringForValue:(NSInteger)value;
+//- (NSString *)windSpeedStringForValue:(NSNumber *)value;
 
 @end

@@ -34,4 +34,7 @@
 
 - (NSString *)iconURLStringForWeather:(Weather *)weather;
 
+- (void)setCityAsFavorite:(City *)city;
+- (City *)favoriteCity;
+
 @end

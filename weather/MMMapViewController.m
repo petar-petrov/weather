@@ -9,10 +9,12 @@
 #import "MMMapViewController.h"
 #import "MMWeatherAnnotation.h"
 #import "MMWeatherAnnotationView.h"
+#import "MMCityManager.h"
+#import <PKRevealController/PKRevealController.h>
 
 @import MapKit;
 
-@interface MMMapViewController () <MKMapViewDelegate>
+@interface MMMapViewController () <MKMapViewDelegate, UIGestureRecognizerDelegate>
 
 @property (weak, nonatomic) IBOutlet MKMapView *mapView;
 
@@ -24,6 +26,8 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
+    self.cities = [[MMCityManager defaultManager] allCities];
+    
     self.mapView.delegate = self;
     
     @autoreleasepool {
@@ -33,6 +37,8 @@
             [self.mapView addAnnotation:weatherAnnotation];
         }
     }
+    
+    self.revealController.revealPanGestureRecognizer.delegate = self;
     
 }
 
@@ -63,6 +69,17 @@
     annotationView.enabled = YES;
     
     return annotationView;
+}
+
+#pragma mark - UIGestureRecognizerDelegate
+
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
+    CGPoint touchPosition = [gestureRecognizer locationInView:self.view];
+    
+    if (!(touchPosition.x < 50.0f || touchPosition.x > self.view.bounds.size.width - 50.0f))
+        return NO;
+    
+    return YES;
 }
 
 @end

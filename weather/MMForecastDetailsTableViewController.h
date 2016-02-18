@@ -12,8 +12,6 @@
 
 @interface MMForecastDetailsTableViewController : UITableViewController
 
-
-
 @property (strong, nonatomic) City *city;
 
 @end
