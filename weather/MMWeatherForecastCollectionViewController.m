@@ -12,6 +12,7 @@
 
 #import "UIImageView+Networking.h"
 #import "MMOpenWeatherMapManager.h"
+#import "MMReachabilityHandler.h"
 
 @import QuartzCore;
 
@@ -37,20 +38,8 @@ static NSString *const fiveDayForecastKeyPath = @"self.city.fiveDayForcast";
     // Uncomment the following line to preserve selection between presentations
     // self.clearsSelectionOnViewWillAppear = NO;
     
-    [[MMOpenWeatherMapManager sharedManager] fetchFiveDayForecastForCityWithID:self.city.cityID completionHandler:^(NSError *error) {
-        
-        if (error == nil) {
-            [self.loadingIndicator stopAnimating];
-            self.loadingIndicator.hidden = YES;
-            self.fiveDayForecast = [[MMCityManager defaultManager] fiveDayForecastForCity:self.city];
-            [self.collectionView reloadData];
-        }
-    }];
-    
     // Register cell classes
     [self.collectionView registerNib:[UINib nibWithNibName:@"MMForecastCollectionViewCell" bundle:nil] forCellWithReuseIdentifier:kReuseIdentifier];
-    
-    // Do any additional setup after loading the view.
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -67,6 +56,26 @@ static NSString *const fiveDayForecastKeyPath = @"self.city.fiveDayForcast";
     self.collectionView.collectionViewLayout = flowLayout;
     
     [self.loadingIndicator startAnimating];
+    
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+    
+    [MMReachabilityHandler performReachabilityCheckWithReachableBlock:^{
+        [[MMOpenWeatherMapManager sharedManager] fetchFiveDayForecastForCityWithID:self.city.cityID completionHandler:^(NSError *error) {
+            
+            if (error == nil) {
+                [self.loadingIndicator stopAnimating];
+                self.loadingIndicator.hidden = YES;
+                self.fiveDayForecast = [[MMCityManager defaultManager] fiveDayForecastForCity:self.city];
+                [self.collectionView reloadData];
+                
+                [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+            }
+        }];
+        
+    }
+                                                     unreachableBlock:^{
+                                                         [self showAlertView];
+                                                     }];
 }
 
 - (void)stopLoadingIndicator {
@@ -106,6 +115,25 @@ static NSString *const fiveDayForecastKeyPath = @"self.city.fiveDayForcast";
     cell.windView.arrowColor = [[UIColor alloc]initWithRed: 0.219034 green: 0.598590 blue: 0.815217 alpha: 1 ];
     
     return cell;
+}
+
+#pragma mark - Private 
+
+- (void)showAlertView {
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Mobile Data is Turned Off", nil)
+                                                                   message:NSLocalizedString(@"Turn on mobile data of use Wi-Fi to access data.", nil)
+                                                            preferredStyle:UIAlertControllerStyleAlert];
+    
+    UIAlertAction *defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
+                                                            style:UIAlertActionStyleDefault
+                                                          handler:^(UIAlertAction *action){
+                                                          }];
+    
+    [alert addAction:defaultAction];
+    
+    alert.preferredAction = defaultAction;
+    
+    [self.parentViewController presentViewController:alert animated:YES completion:nil];
 }
 
 @end

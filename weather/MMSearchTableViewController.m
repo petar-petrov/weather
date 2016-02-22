@@ -10,6 +10,7 @@
 #import "MMWeatherCoreData.h"
 #import "City.h"
 #import "MMOpenWeatherMapManager.h"
+#import "MMReachabilityHandler.h"
 
 #import "MMCityManager.h"
 
@@ -63,6 +64,11 @@
     [super viewDidAppear:animated];
     
     [self performSelector:@selector(showKeyboard) withObject:nil afterDelay:0.1];
+    
+    [MMReachabilityHandler performReachabilityCheckWithReachableBlock:nil
+                                                     unreachableBlock:^{
+                                                         [self showAlertView];
+                                                     }];
 }
 
 #pragma mark - UITableViewDelegate
@@ -98,13 +104,21 @@
     if (searchController.searchBar.text.length > 1) {
         NSLog(@"%@",searchController.searchBar.text);
         
-        [self.manager searchForCityWithText:searchController.searchBar.text completionHandler:^(NSArray *result){
-            if (result) {
-                self.cities = result;
-                
-                [self.tableView reloadData];
-            }
-        }];
+        [MMReachabilityHandler performReachabilityCheckWithReachableBlock:^{
+            [self.manager searchForCityWithText:searchController.searchBar.text completionHandler:^(NSArray *result){
+                if (result) {
+                    self.cities = result;
+                    
+                    [self.tableView reloadData];
+                }
+            }];
+            
+        }
+                                                         unreachableBlock:^{
+                                                             [self showAlertView];
+                                                         }];
+        
+        
         
     }
 }
@@ -130,6 +144,23 @@
 
 - (void)showKeyboard {
     [self.searchController.searchBar becomeFirstResponder];
+}
+
+- (void)showAlertView {
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Mobile Data is Turned Off", nil)
+                                                                   message:NSLocalizedString(@"Turn on mobile data of use Wi-Fi to access data.", nil)
+                                                            preferredStyle:UIAlertControllerStyleAlert];
+    
+    UIAlertAction *defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
+                                                            style:UIAlertActionStyleDefault
+                                                          handler:^(UIAlertAction *action){
+                                                          }];
+    
+    [alert addAction:defaultAction];
+    
+    alert.preferredAction = defaultAction;
+    
+    [self presentViewController:alert animated:YES completion:nil];
 }
 
 @end

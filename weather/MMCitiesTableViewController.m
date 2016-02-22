@@ -83,6 +83,8 @@ static NSString *const reuseIdentifier = @"WeatherCell";
     
     [super viewDidLoad];
     
+    [[UIBarButtonItem appearance] setBackButtonTitlePositionAdjustment:UIOffsetMake(0, -60) forBarMetrics:UIBarMetricsDefault];
+    
     __autoreleasing NSError *error = nil;
     
     if (![self.fetchedResultController performFetch:&error]) {
@@ -93,6 +95,7 @@ static NSString *const reuseIdentifier = @"WeatherCell";
     [self.tableView registerClass:[MMWeatherTableViewCell class] forCellReuseIdentifier:reuseIdentifier];
     
     self.weatherRefreshControl = [[UIRefreshControl alloc] init];
+    self.weatherRefreshControl.attributedTitle = [self attributedTitleForRefreshControl];
     [self.weatherRefreshControl addTarget:self action:@selector(pullDownRefresh) forControlEvents:UIControlEventValueChanged];
     
     self.refreshControl = self.weatherRefreshControl;
@@ -110,8 +113,14 @@ static NSString *const reuseIdentifier = @"WeatherCell";
 }
 
 - (void)pullDownRefresh {
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+    
     [self.manager updateAllCitiesWithCompletionHandler:^{
         [self.weatherRefreshControl endRefreshing];
+        
+        self.weatherRefreshControl.attributedTitle = [self attributedTitleForRefreshControl];
+        
+        [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
     }];
 }
 
@@ -207,6 +216,15 @@ static NSString *const reuseIdentifier = @"WeatherCell";
 
 #pragma mark - Private
 
+- (NSAttributedString *)attributedTitleForRefreshControl {
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    dateFormatter.dateFormat = @"YYYY MMM dd HH:mm:ss";
+    
+    NSAttributedString *attributedTitle =  [[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"Last Updated: %@", [dateFormatter stringFromDate:[MMOpenWeatherMapManager sharedManager].allCitiesLastUpdatedDate]]];
+    
+    return attributedTitle;
+}
+
 - (void)configureNavgationBarTitle {
     NSMutableAttributedString *titleAttributedString = [[NSMutableAttributedString alloc] initWithString:NSLocalizedString(@"MMWeather!", nil)];
     
@@ -227,11 +245,17 @@ static NSString *const reuseIdentifier = @"WeatherCell";
 }
 
 - (void)refreshWeatherData {
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+    
     [MMReachabilityHandler performReachabilityCheckWithReachableBlock:^{
-                                                        [self.manager updateAllCitiesWithCompletionHandler:nil];
-                                                    }
+        [self.manager updateAllCitiesWithCompletionHandler:^{
+            self.weatherRefreshControl.attributedTitle = [self attributedTitleForRefreshControl];
+            [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+        }];
+        
+    }
                                                    unreachableBlock:^{
-                                                        [self showAlertView];
+                                                       [self showAlertView];
                                                    }];
 }
 

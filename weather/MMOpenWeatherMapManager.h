@@ -18,8 +18,6 @@
 
 - (instancetype)init NS_UNAVAILABLE;
 
-//- (void)fetchWeatherForecaseForCity:(NSString *)name completionHandler:(void (^) (NSDictionary *))handler;
-
 - (void)updateAllCitiesWithCompletionHandler:(void (^)(void))block;
 - (void)updateForecastForCityWithID:(NSNumber *)cityID completionHandler:(void(^)(void))handler;
 

@@ -121,8 +121,6 @@
             }
         }
     }];
-    
-    
 }
 
 
@@ -153,15 +151,20 @@
     }];
 }
 
-#warning - error not handled
 - (NSArray <Weather *> *)fiveDayForecastForCity:(City *)city {
-    City *mainContextCity = [self.dataStore.mainContext existingObjectWithID:city.objectID error:nil];
+    __autoreleasing NSError *error = nil;
     
-    NSArray *fiveDayForecast = [mainContextCity.fiveDayForecast allObjects];
+    City *mainContextCity = [self.dataStore.mainContext existingObjectWithID:city.objectID error:&error];
     
-    fiveDayForecast = [fiveDayForecast sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"dataTime" ascending:YES]]];
+    if (error == nil) {
+        NSArray *fiveDayForecast = [mainContextCity.fiveDayForecast allObjects];
+        
+        fiveDayForecast = [fiveDayForecast sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"dataTime" ascending:YES]]];
+        
+        return fiveDayForecast;
+    }
     
-    return fiveDayForecast;
+    return nil;
 }
 
 #pragma mark - Retrieve City/s

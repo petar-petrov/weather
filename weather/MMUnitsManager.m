@@ -19,7 +19,9 @@ NSString *const MMUnitsManagerDidChangeUnit = @"MMUnitsManagerDidChangeUnit";
 #pragma mark - Custom Accessors
 
 - (NSString *)currentUnit {
-    return [[NSUserDefaults standardUserDefaults] stringForKey:kMMWeatherUnit];
+    NSUserDefaults *userDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.weatherContainer"];
+    
+    return [userDefaults stringForKey:kMMWeatherUnit];
 }
 
 - (NSString *)speedUnit {
@@ -67,17 +69,19 @@ NSString *const MMUnitsManagerDidChangeUnit = @"MMUnitsManagerDidChangeUnit";
 #pragma mark - Public
 
 - (void)setUnits:(MMUnits)units {
+    NSUserDefaults *userDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.weatherContainer"];
+    
     
     switch (units) {
         case MMUnitsMetric:
-            [[NSUserDefaults standardUserDefaults] setObject:kUnitsMetric forKey:kMMWeatherUnit];
+            [userDefaults setObject:kUnitsMetric forKey:kMMWeatherUnit];
             break;
         case MMUnitsImperial:
-            [[NSUserDefaults standardUserDefaults] setObject:kUnitsImperial forKey:kMMWeatherUnit];
+            [userDefaults setObject:kUnitsImperial forKey:kMMWeatherUnit];
             break;
     }
 
-    [[NSUserDefaults standardUserDefaults] synchronize];
+    [userDefaults synchronize];
     
     [[NSNotificationCenter defaultCenter] postNotificationName:MMUnitsManagerDidChangeUnit object:self userInfo:nil];
 }
@@ -85,7 +89,7 @@ NSString *const MMUnitsManagerDidChangeUnit = @"MMUnitsManagerDidChangeUnit";
 #pragma mark - Private
 
 - (void)setupManager {
-    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+    NSUserDefaults *userDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.weatherContainer"];
     
     NSString *unitString = [userDefaults stringForKey:kMMWeatherUnit];
     

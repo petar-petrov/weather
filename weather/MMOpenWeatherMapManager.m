@@ -12,8 +12,6 @@
 #import "MMUnitsManager.h"
 #import "MMURLRequestHandler.h"
 
-@import UIKit;
-
 @interface MMOpenWeatherMapManager () <NSURLSessionDelegate>
 
 @property (strong, nonatomic) NSURLSessionDataTask *dataTask;
@@ -26,6 +24,8 @@
 
 @synthesize allCitiesLastUpdatedDate = _allCitiesLastUpdatedDate;
 
+static NSString *const kAllCitiesLastUpdatedDateKey = @"kAllCitiesLastUpdatedDateKey";
+
 #pragma mark - Custom Accessors
 
 - (NSString *)unit {
@@ -35,7 +35,7 @@
 - (NSDate *)allCitiesLastUpdatedDate {
     
     if (!_allCitiesLastUpdatedDate) {
-        // get the last updated date from user defaults
+        _allCitiesLastUpdatedDate = [[NSUserDefaults standardUserDefaults] objectForKey:kAllCitiesLastUpdatedDateKey];
     }
     
     return _allCitiesLastUpdatedDate;
@@ -45,7 +45,8 @@
     if (![_allCitiesLastUpdatedDate isEqualToDate:allCitiesLastUpdatedDate]) {
         _allCitiesLastUpdatedDate = allCitiesLastUpdatedDate;
         
-        // set the last updated date to user defaults
+        [[NSUserDefaults standardUserDefaults] setObject:_allCitiesLastUpdatedDate forKey:kAllCitiesLastUpdatedDateKey];
+        [[NSUserDefaults standardUserDefaults] synchronize];
     }
 }
 
@@ -64,13 +65,17 @@
 
 #pragma mark - Public
 
-static NSString *const appid = @"36eea9dcce34a3ec067b176eda6c1987";
+static NSString *const kAppID = @"36eea9dcce34a3ec067b176eda6c1987";
 
 - (void)updateAllCitiesWithCompletionHandler:(void (^)(void))block {
         
     NSArray *cities = [[MMCityManager defaultManager] allCities];
     
+    __weak MMOpenWeatherMapManager *weakSelf = self;
+    
     [self fetchWeatherForecaseForCities:cities completionHandler:^(NSArray *citiesData) {
+        MMOpenWeatherMapManager *strongSelf = weakSelf;
+        
         for (int index = 0; index < citiesData.count; index++) {
             NSDictionary *cityData = citiesData[index];
             
@@ -80,7 +85,7 @@ static NSString *const appid = @"36eea9dcce34a3ec067b176eda6c1987";
         }
         
         dispatch_async(dispatch_get_main_queue(), ^{
-            self.allCitiesLastUpdatedDate = [NSDate date];
+            strongSelf.allCitiesLastUpdatedDate = [NSDate date];
             
             if (block != nil) {
                 block();
@@ -107,9 +112,7 @@ static NSString *const appid = @"36eea9dcce34a3ec067b176eda6c1987";
     
     NSString *idsString = cityID.stringValue;
     
-    NSURL *url = [self constructURLWithPath:@"/data/2.5/forecast" queryDictionary:@{@"id" : idsString, @"appid" : appid, @"units" : self.unit}];
-    
-//    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+    NSURL *url = [self constructURLWithPath:@"/data/2.5/forecast" queryDictionary:@{@"id" : idsString, @"appid" : kAppID, @"units" : self.unit}];
     
     [MMURLRequestHandler dataRequestWithURL:url
                                successBlock:^(id data) {
@@ -117,8 +120,6 @@ static NSString *const appid = @"36eea9dcce34a3ec067b176eda6c1987";
                                    
                                    dispatch_async(dispatch_get_main_queue(), ^{
                                        [[MMCityManager defaultManager] cityWithID:cityID updateFiveDayForecast:forecast];
-
-//                                       [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
 
                                        if (handler != nil) {
                                            handler(nil);
@@ -149,9 +150,7 @@ static NSString *const appid = @"36eea9dcce34a3ec067b176eda6c1987";
         }
     }
     
-    NSURL *url = [self constructURLWithPath:@"/data/2.5/group" queryDictionary:@{@"id" : idsString, @"appid" : appid, @"units" : self.unit}];
-    
-//    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+    NSURL *url = [self constructURLWithPath:@"/data/2.5/group" queryDictionary:@{@"id" : idsString, @"appid" : kAppID, @"units" : self.unit}];
     
     [MMURLRequestHandler dataRequestWithURL:url
                                successBlock:^(id data){
@@ -160,8 +159,6 @@ static NSString *const appid = @"36eea9dcce34a3ec067b176eda6c1987";
                                    dispatch_async(dispatch_get_main_queue(), ^{
                                        if (handler != nil) {
                                            handler(cities);
-
-//                                           [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
                                        }
                                    });
                                }
@@ -172,14 +169,12 @@ static NSString *const appid = @"36eea9dcce34a3ec067b176eda6c1987";
     
     NSString *persentEncodedString = [text stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]];
     
-    NSURL *url = [self constructURLWithPath:@"/data/2.5/find" queryDictionary:@{@"q" : persentEncodedString, @"appid" : appid, @"units" : self.unit, @"type" : @"like"}];
+    NSURL *url = [self constructURLWithPath:@"/data/2.5/find" queryDictionary:@{@"q" : persentEncodedString, @"appid" : kAppID, @"units" : self.unit, @"type" : @"like"}];
     
     if (self.dataTask) {
         [self.dataTask cancel];
         self.dataTask = nil;
     }
-    
-//    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
     
     self.dataTask = [MMURLRequestHandler dataRequestWithURL:url
                                                successBlock:^(id data){
@@ -193,8 +188,6 @@ static NSString *const appid = @"36eea9dcce34a3ec067b176eda6c1987";
                                                       if (handler != nil) {
                                                           handler(cityFound);
                                                       }
-                                                      
-//                                                      [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
                                                   });
                                                }
                                                   failBlock:nil];

@@ -40,7 +40,7 @@
         
         _cityLabel = [[UILabel alloc] initWithFrame:CGRectZero];
         _cityLabel.text = weatherAnnotation.title;
-        _cityLabel.textColor = [UIColor grayColor];
+        _cityLabel.textColor = [[UIColor alloc]initWithRed: 0.219034 green: 0.598590 blue: 0.815217 alpha: 1 ];//[UIColor grayColor];
         _cityLabel.font = [UIFont boldSystemFontOfSize:13.0f];
         _cityLabel.minimumScaleFactor = 0.5f;
         _cityLabel.numberOfLines = 0;
@@ -64,7 +64,7 @@
         
         _tempLabel = [[UILabel alloc] initWithFrame:CGRectZero];
         _tempLabel.text = [NSString stringWithFormat:@"%ldº", (long)weatherAnnotation.temp.integerValue];
-        _tempLabel.textColor = [UIColor grayColor];
+        _tempLabel.textColor = [[UIColor alloc]initWithRed: 0.219034 green: 0.598590 blue: 0.815217 alpha: 1 ];//[UIColor grayColor];
         _tempLabel.font = [UIFont boldSystemFontOfSize:13.0f];
         _tempLabel.minimumScaleFactor = 0.5f;
         _tempLabel.textAlignment = NSTextAlignmentCenter;

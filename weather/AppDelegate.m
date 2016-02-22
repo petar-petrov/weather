@@ -64,6 +64,7 @@
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
     // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
+    
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
@@ -71,23 +72,29 @@
     
     [self mergeChangesFromWidget];
     
-    int registrantionToken = 0;
+    NSUserDefaults *userDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.weatherContainer"];
     
-    notify_register_dispatch("buttonPressed", &registrantionToken, dispatch_get_main_queue(), ^(int token){
+    if ([userDefaults boolForKey:@"ExtensionTapped"]) {
+        
         MMMenuTableViewController *menuTableViewController = (MMMenuTableViewController *)((UINavigationController *)self.revealController.leftViewController).viewControllers[0];
         
         MMCitiesTableViewController *citiesViewController = (MMCitiesTableViewController *)((UINavigationController *)menuTableViewController.viewControllers[0]).viewControllers[0];
         
-        [self.revealController setFrontViewController:(UINavigationController *)menuTableViewController.viewControllers[0]];
-        [self.revealController showViewController:(UINavigationController *)menuTableViewController.viewControllers[0]];
+        [citiesViewController.navigationController popToRootViewControllerAnimated:NO];
+        
+        [self.revealController setFrontViewController:citiesViewController.navigationController];
+        [self.revealController showViewController:citiesViewController.navigationController animated:NO completion:nil];
         
         UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
         
         MMForecastDetailsTableViewController *forecastTableViewController = [storyboard instantiateViewControllerWithIdentifier:@"ForecastDetailsView"];
         forecastTableViewController.city = [[MMCityManager defaultManager] favoriteCity];
         
-        [citiesViewController.navigationController pushViewController:forecastTableViewController animated:NO];
-    });
+        [citiesViewController.navigationController pushViewController:forecastTableViewController animated:YES];
+    }
+    
+    [userDefaults removeObjectForKey:@"ExtensionTapped"];
+    [userDefaults synchronize];
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application {
@@ -118,7 +125,7 @@
 - (void)mergeChangesFromWidget {
     NSUserDefaults *userDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.weatherContainer"];
     
-    NSData *data = [userDefaults dataForKey:@"anKey"];
+    NSData *data = [userDefaults dataForKey:@"NotificationQueue"];
     
     if (data) {
         NSArray *notificationQueue = [NSKeyedUnarchiver unarchiveObjectWithData:data];
@@ -126,15 +133,15 @@
         if (notificationQueue) {
             MMWeatherCoreData *dataStore = [MMWeatherCoreData defaultDataStore];
             
-            [dataStore.mainContext performBlock:^{
+            [dataStore.privateContext performBlock:^{
                 for (NSDictionary *notificationData in notificationQueue) {
-                    [NSManagedObjectContext mergeChangesFromRemoteContextSave:notificationData intoContexts:@[dataStore.mainContext]];
+                    [NSManagedObjectContext mergeChangesFromRemoteContextSave:notificationData intoContexts:@[dataStore.privateContext]];
                 }
             }];
         }
     }
     
-    [userDefaults removeObjectForKey:@"anKey"];
+    [userDefaults removeObjectForKey:@"NotificationQueue"];
     [userDefaults synchronize];
 }
 @end

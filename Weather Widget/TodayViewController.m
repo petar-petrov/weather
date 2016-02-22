@@ -46,6 +46,36 @@
                                                       
                                                       [strongSelf handleContextDidChange:note];
                                                   }];
+    
+    
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
+    City *favoriteCity = [[MMCityManager defaultManager] favoriteCity];
+    
+    if (favoriteCity) {
+        [[MMOpenWeatherMapManager sharedManager] updateForecastForCityWithID:favoriteCity.cityID completionHandler:^{
+            
+            
+            City *favoriteCity = [[MMCityManager defaultManager] favoriteCity];
+            
+            Weather *currentWeather = (Weather *)favoriteCity.currentWeather;
+            
+            NSInteger temp = currentWeather.temp.integerValue;
+            
+            self.nameLabel.text = favoriteCity.name;
+            self.tempLabel.text = [NSString stringWithFormat:@"%ldº", temp];
+            
+            NSString *urlString = [[MMCityManager defaultManager] iconURLStringForWeather:favoriteCity.currentWeather];
+            
+            [self.imageView setImageWithURLString:urlString placeholder:nil];
+        }];
+    } else {
+        self.nameLabel.text = @"No Favorite City Chosen";
+        self.tempLabel.text = @"";
+    }
 }
 
 - (void)didReceiveMemoryWarning {
@@ -58,24 +88,34 @@
 }
 
 - (void)widgetPerformUpdateWithCompletionHandler:(void (^)(NCUpdateResult))completionHandler {
+    
     City *favoriteCity = [[MMCityManager defaultManager] favoriteCity];
     
-    [[MMOpenWeatherMapManager sharedManager] updateForecastForCityWithID:favoriteCity.cityID completionHandler:^{
-        City *favoriteCity = [[MMCityManager defaultManager] favoriteCity];
+    if (favoriteCity) {
+        [[MMOpenWeatherMapManager sharedManager] updateForecastForCityWithID:favoriteCity.cityID completionHandler:^{
+            
+            
+            City *favoriteCity = [[MMCityManager defaultManager] favoriteCity];
+            
+            Weather *currentWeather = (Weather *)favoriteCity.currentWeather;
+            
+            NSInteger temp = currentWeather.temp.integerValue;
+            
+            self.nameLabel.text = favoriteCity.name;
+            self.tempLabel.text = [NSString stringWithFormat:@"%ldº", temp];
+            
+            NSString *urlString = [[MMCityManager defaultManager] iconURLStringForWeather:favoriteCity.currentWeather];
+            
+            [self.imageView setImageWithURLString:urlString placeholder:nil];
+            
+            completionHandler(NCUpdateResultNewData);
+        }];
+    } else {
+        self.nameLabel.text = @"No Favorite City Chosen";
+        self.tempLabel.text = @"";
         
-        Weather *currentWeather = (Weather *)favoriteCity.currentWeather;
-        
-        NSInteger temp = currentWeather.temp.integerValue;
-        
-        self.nameLabel.text = favoriteCity.name;
-        self.tempLabel.text = [NSString stringWithFormat:@"%ldº", temp];
-        
-        NSString *urlString = [[MMCityManager defaultManager] iconURLStringForWeather:favoriteCity.currentWeather];
-        
-        [self.imageView setImageWithURLString:urlString placeholder:nil];
-    }];
-
-    completionHandler(NCUpdateResultNewData);
+        completionHandler(NCUpdateResultNewData);
+    }
 }
 
 - (UIEdgeInsets)widgetMarginInsetsForProposedMarginInsets:(UIEdgeInsets)defaultMarginInsets {
@@ -87,11 +127,12 @@
 - (void)handleTap:(UITapGestureRecognizer *)gestureRecognizer {
     NSURL *weatherAppURL = [NSURL URLWithString:@"mmweather://"];
     
+    NSUserDefaults *userDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.weatherContainer"];
+    
+    [userDefaults setBool:@(YES) forKey:@"ExtensionTapped"];
+    [userDefaults synchronize];
+    
     [self.extensionContext openURL:weatherAppURL completionHandler:nil];
-    
-    
-    notify_post("buttonPressed");
-   
 }
 
 - (void)handleContextDidChange:(NSNotification *)notification{
@@ -117,7 +158,7 @@
             
             NSMutableArray *notificationQueue = [NSMutableArray array];
             
-            NSData *data = [userDefaults dataForKey:@"anKey"];
+            NSData *data = [userDefaults dataForKey:@"NotificationQueue"];
             NSArray *existingNotificationQueue = nil;
             if (data) {
                  existingNotificationQueue = [NSKeyedUnarchiver unarchiveObjectWithData:data];
@@ -128,11 +169,7 @@
             
             NSData *archivedData = [NSKeyedArchiver archivedDataWithRootObject:notificationQueue];
             
-            NSArray *array = [NSKeyedUnarchiver unarchiveObjectWithData:archivedData];
-            
-            NSLog(@"%@", array);
-            
-            [userDefaults setObject:archivedData forKey:@"anKey"];
+            [userDefaults setObject:archivedData forKey:@"NotificationQueue"];
             [userDefaults synchronize];
             
         } else {
